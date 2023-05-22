@@ -83,6 +83,11 @@ Tuner.prototype.noteNum = function (frequency) {
   return Math.round(noteNum);
 };
 
+Tuner.prototype.standardNoteNum = function (chord, octave) {
+  const noteNum = this.AllNotes.indexOf(chord) + 12 * (octave - 1);
+  return noteNum;
+}
+
 Tuner.prototype.getNoteFrequency = function (noteNum) {
   const frequency = this.startfrequency * Math.pow(2, noteNum/12);
   return frequency;
@@ -104,11 +109,6 @@ Tuner.prototype.nearestAllFrequency = function (frequency) {
     nearestFrequency = maxFreq;
   }
   return nearestFrequency;
-}
-
-Tuner.prototype.standardNoteNum = function (chord, octave) {
-  const noteNum = this.AllNotes.indexOf(chord) + 12 * (octave - 1);
-  return noteNum;
 }
 
 Tuner.prototype.nearestStandardFrequency = function (frequency) {
@@ -149,6 +149,14 @@ Tuner.prototype.findNeighbour = function (frequency, prev, next) {
 Tuner.prototype.getOctave = function (noteNum) {
   const octave = Math.ceil(noteNum / 12) + 1;
   return octave;
+}
+
+Tuner.prototype.standardStrictDelta = function (userFrequency, ...standardNote) {
+  const [chord, octave] = standardNote;
+  const standardNum = this.standardNoteNum(chord, octave);
+  const standardFrequency = this.getNoteFrequency(standardNum);
+  const delta = Math.abs(userFrequency - standardFrequency);
+  return delta;
 }
 
 Tuner.prototype.modeAll = function(userFrequency) {
