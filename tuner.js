@@ -15,6 +15,14 @@ const Tuner = function () {
     'A#',
     'B',
   ];
+  this.StandardTune = [
+    ['E', 1],
+    ['A', 1],
+    ['D', 2],
+    ['G', 2],
+    ['B', 2],
+    ['E', 3],
+  ]
 };
 
 Tuner.prototype.init = async function () {
@@ -81,6 +89,39 @@ Tuner.prototype.nearestAllFrequency = function (frequency) {
   for(let i = 0; i < allNotes; i++) {
     const prev = this.getNoteFrequency(i);
     const next = this.getNoteFrequency(i + 1);
+    if(frequency >= prev && frequency <= next) {
+      nearestFrequency = this.findNeighbour(frequency, prev, next);
+    }
+  }
+  if (frequency > maxFreq) {
+    nearestFrequency = maxFreq;
+  }
+  return nearestFrequency;
+}
+
+Tuner.prototype.standardNoteNum = function (chord, octave) {
+  const noteNum = this.AllNotes.indexOf(chord) + 12 * (octave - 1);
+  return noteNum;
+}
+
+Tuner.prototype.nearestStandardFrequency = function (frequency) {
+  const length = this.StandardTune.length;
+  const numOfMin = this.standardNoteNum(...this.StandardTune[0]);
+  const numOfMax = this.standardNoteNum(...this.StandardTune[length - 1]);
+
+  const minFreq = this.getNoteFrequency(numOfMin);
+  const maxFreq = this.getNoteFrequency(numOfMax);
+  let nearestFrequency = minFreq;
+
+  for(let i = 0; i < length - 1; i++) {
+    const standardNotePrev = this.StandardTune[i];
+    const standardNoteNext = this.StandardTune[i + 1];
+
+    const standardNumPrev = this.standardNoteNum(...standardNotePrev);
+    const standardNumNext = this.standardNoteNum(...standardNoteNext);
+    const prev = this.getNoteFrequency(standardNumPrev);
+    const next = this.getNoteFrequency(standardNumNext);
+
     if(frequency >= prev && frequency <= next) {
       nearestFrequency = this.findNeighbour(frequency, prev, next);
     }
