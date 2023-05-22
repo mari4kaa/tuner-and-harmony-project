@@ -1,9 +1,11 @@
 const OCTAVES = 4;
+let MODE = 'standardAuto';
 
 const Tuner = function () {
   this.startfrequency = 65.41;
   this.AllNotes = [
     'C',
+    'C#',
     'D',
     'D#',
     'E',
@@ -54,7 +56,12 @@ Tuner.prototype.tune = function () {
     console.log('Captured');
     const userFrequency = this.getUserFrequency();
     if (userFrequency) {
-      this.modeAll(userFrequency);
+      if(MODE === 'allNotes') {
+        this.modeAll(userFrequency);
+      }
+      else if(MODE === 'standardAuto') {
+        this.modeStandardAuto(userFrequency);
+      }
     }
   });
 };
@@ -152,6 +159,19 @@ Tuner.prototype.modeAll = function(userFrequency) {
 
   console.log('User frequency:', userFrequency);
   console.log('Nearest frequency:', nearestFrequency);
+  console.log('Delta:', delta);
+  console.log('Note:', this.AllNotes[(noteNum % 12)]);
+  console.log('Octave: ', octave);
+}
+
+Tuner.prototype.modeStandardAuto = function(userFrequency) {
+  const nearestFrequency = this.nearestStandardFrequency(userFrequency);
+  const delta = Math.abs(nearestFrequency - userFrequency);
+  const noteNum = this.noteNum(nearestFrequency);
+  const octave = this.getOctave(noteNum);
+
+  console.log('User frequency:', userFrequency);
+  console.log('Nearest standard frequency:', nearestFrequency);
   console.log('Delta:', delta);
   console.log('Note:', this.AllNotes[(noteNum % 12)]);
   console.log('Octave: ', octave);
