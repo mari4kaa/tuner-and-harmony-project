@@ -82,8 +82,7 @@ Tuner.prototype.getUserFrequency = function () {
   const frequencyIndex = dataArray.indexOf(Math.max(...dataArray));
   const binWidth = this.audioCtx.sampleRate / this.analyser.fftSize;
   const userFrequency = frequencyIndex * binWidth;
-
-  return userFrequency;
+  if (dataArray[frequencyIndex] > -40) return userFrequency;
 }
 
 Tuner.prototype.noteNum = function (frequency) {
