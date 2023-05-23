@@ -113,9 +113,7 @@ Tuner.prototype.nearestAllFrequency = function (frequency) {
       nearestFrequency = this.findNeighbour(frequency, prev, next);
     }
   }
-  if (frequency > maxFreq) {
-    nearestFrequency = maxFreq;
-  }
+  if (frequency > maxFreq) return maxFreq;
   return nearestFrequency;
 }
 
@@ -141,9 +139,7 @@ Tuner.prototype.nearestStandardFrequency = function (frequency) {
       nearestFrequency = this.findNeighbour(frequency, prev, next);
     }
   }
-  if (frequency > maxFreq) {
-    nearestFrequency = maxFreq;
-  }
+  if (frequency > maxFreq) return maxFreq;
   return nearestFrequency;
 }
 
