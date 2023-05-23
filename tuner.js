@@ -37,7 +37,7 @@ Tuner.prototype.init = async function () {
   this.audioCtx = new window.AudioContext();
   this.analyser = new AnalyserNode(this.audioCtx);
   this.scriptProcessor = this.audioCtx.createScriptProcessor(
-    2048,
+    4096,
     1,
     1,
   );
@@ -81,9 +81,9 @@ Tuner.prototype.getUserFrequency = function () {
 
   const frequencyIndex = dataArray.indexOf(Math.max(...dataArray));
   const binWidth = this.audioCtx.sampleRate / this.analyser.fftSize;
-  const frequency = frequencyIndex * binWidth;
+  const userFrequency = frequencyIndex * binWidth;
 
-  return frequency;
+  return userFrequency;
 }
 
 Tuner.prototype.noteNum = function (frequency) {
@@ -104,17 +104,18 @@ Tuner.prototype.getNoteFrequency = function (noteNum) {
 Tuner.prototype.nearestAllFrequency = function (frequency) {
   const minFreq = this.getNoteFrequency(0);
   const maxFreq = this.getNoteFrequency((this.AllNotes.length * OCTAVES) - 1);
-  let nearestFrequency = minFreq;
+  if (frequency <= minFreq) return minFreq;
+  else if (frequency >= maxFreq) return maxFreq;
+
   const allNotes = this.AllNotes.length * OCTAVES;
   for (let i = 0; i < allNotes; i++) {
     const prev = this.getNoteFrequency(i);
     const next = this.getNoteFrequency(i + 1);
     if(frequency >= prev && frequency <= next) {
-      nearestFrequency = this.findNeighbour(frequency, prev, next);
+      const nearestFrequency = this.findNeighbour(frequency, prev, next);
+      return nearestFrequency;
     }
   }
-  if (frequency > maxFreq) return maxFreq;
-  return nearestFrequency;
 }
 
 Tuner.prototype.nearestStandardFrequency = function (frequency) {
@@ -124,18 +125,18 @@ Tuner.prototype.nearestStandardFrequency = function (frequency) {
 
   const minFreq = this.getNoteFrequency(numOfMin);
   const maxFreq = this.getNoteFrequency(numOfMax);
-  let nearestFrequency = minFreq;
+  if (frequency <= minFreq) return minFreq;
+  else if (frequency >= maxFreq) return maxFreq;
 
   for (let i = 0; i < length - 1; i++) {
     const standardNotePrev = this.StandardTune[i];
     const standardNoteNext = this.StandardTune[i + 1];
     const [prev, next] = this.standardPrevAndNext(standardNotePrev, standardNoteNext);
     if (frequency >= prev && frequency <= next) {
-      nearestFrequency = this.findNeighbour(frequency, prev, next);
+      const nearestFrequency = this.findNeighbour(frequency, prev, next);
+      return nearestFrequency;
     }
   }
-  if (frequency > maxFreq) return maxFreq;
-  return nearestFrequency;
 }
 
 Tuner.prototype.findNeighbour = function (frequency, prev, next) {
