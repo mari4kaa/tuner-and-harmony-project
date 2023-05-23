@@ -129,12 +129,7 @@ Tuner.prototype.nearestStandardFrequency = function (frequency) {
   for (let i = 0; i < length - 1; i++) {
     const standardNotePrev = this.StandardTune[i];
     const standardNoteNext = this.StandardTune[i + 1];
-
-    const standardNumPrev = this.standardNoteNum(...standardNotePrev);
-    const standardNumNext = this.standardNoteNum(...standardNoteNext);
-    const prev = this.getNoteFrequency(standardNumPrev);
-    const next = this.getNoteFrequency(standardNumNext);
-
+    const [prev, next] = this.standardPrevAndNext(standardNotePrev, standardNoteNext);
     if (frequency >= prev && frequency <= next) {
       nearestFrequency = this.findNeighbour(frequency, prev, next);
     }
@@ -148,6 +143,15 @@ Tuner.prototype.findNeighbour = function (frequency, prev, next) {
   const delta_next = next - frequency;
   const neighbour = (delta_prev > delta_next)? next: prev;
   return neighbour;
+}
+
+Tuner.prototype.standardPrevAndNext = function (standardNotePrev, standardNoteNext) {
+  const standardNumPrev = this.standardNoteNum(...standardNotePrev);
+  const standardNumNext = this.standardNoteNum(...standardNoteNext);
+  const prev = this.getNoteFrequency(standardNumPrev);
+  const next = this.getNoteFrequency(standardNumNext);
+
+  return [prev, next];
 }
 
 Tuner.prototype.getOctave = function (noteNum) {
