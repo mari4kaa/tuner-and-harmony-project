@@ -1,4 +1,5 @@
 const OCTAVES = 4;
+const MIN_DECIBELS = -40;
 
 const config = {
   mode: 'standardAuto',
@@ -82,7 +83,7 @@ Tuner.prototype.getUserFrequency = function () {
   const frequencyIndex = dataArray.indexOf(Math.max(...dataArray));
   const binWidth = this.audioCtx.sampleRate / this.analyser.fftSize;
   const userFrequency = frequencyIndex * binWidth;
-  if (dataArray[frequencyIndex] > -40) return userFrequency;
+  if (dataArray[frequencyIndex] > MIN_DECIBELS) return userFrequency;
 }
 
 Tuner.prototype.noteNum = function (frequency) {
