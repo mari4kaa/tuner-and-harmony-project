@@ -16,6 +16,8 @@ Application.prototype.start = function () {
 };
 
 Application.prototype.update = function (noteData) {
+  hideNote();
+  displayNote(noteData.noteName, noteData.octave);
   this.meter.update(noteData.delta);
 };
 

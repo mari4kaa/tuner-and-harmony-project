@@ -11,13 +11,16 @@
   
   <div id="meter-container">
     <div class="text">1 line ~ 10 Hz</div>
+    <div id="note"></div>
+    <div id="octave"></div>
   </div>
   <script src = "tuner.js"></script>
   <script src = "meter.js"></script>
+  <script src = "note.js"></script>
   <script src="app.js"></script>
 
   <center><h2>Tune your guitar!</h2></center>
-  <h3>Choose mode</h3>
+  <h3>Choose the mode</h3>
   <button id = "allNotes" onclick = "config.mode = 'allNotes';">All notes</button>
     
   <button id = "standardAuto" onclick = "config.mode = 'standardAuto';">Standard auto</button>

@@ -61,3 +61,22 @@ html {
     font-weight: bold;
   }
   
+  #note {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 32px;
+    font-weight: bolder;
+    color: red;
+  }
+
+  #octave {
+    position: absolute;
+    top: 28px;
+    left: 54%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    font-weight: bold;
+    color: red;
+  }
