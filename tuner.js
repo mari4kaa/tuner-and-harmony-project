@@ -210,17 +210,17 @@ Tuner.prototype.modeStandardAuto = function (userFrequency) {
 
 Tuner.prototype.modeStandardStrict = function (userFrequency, noteIdx) {
   const standardNote = this.StandardTune[noteIdx];
-  const strictFrequecy = this.standardStrictFrequency(...standardNote);
+  const [chord, octave] = standardNote;
+  const strictFrequecy = this.standardStrictFrequency(chord, octave);
   const delta = userFrequency - strictFrequecy;
-  const noteNum = this.standardNoteNum(...standardNote);
-  const octave = this.getOctave(noteNum);
+  const noteNum = this.standardNoteNum(chord, octave);
 
   const noteData = {
     userFreq: userFrequency,
     nearestFreq: strictFrequecy,
     delta: delta,
     noteName: this.AllNotes[noteNum % 12],
-    octave: octave,
+    octave: octave + 1,
   }
 
   console.log(noteData);
