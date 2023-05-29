@@ -2,25 +2,29 @@
 <html>
 <head>
   <meta charset="utf-8"/>
+  <title>Tuner</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h3>Chose mode</h3>
-    <div>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
-      <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css" rel="stylesheet">
-      <script src = "tuner.js"></script>
-      <script src="app.js"></script>
-      <button id = "allNotes" onclick = "config.mode = 'allNotes';">All notes</button>
-    
-      <button id = "standardAuto" onclick = "config.mode = 'standardAuto';">Standard auto</button>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css" rel="stylesheet">
+  
+  <div id="meter-container"></div>
+  <script src = "tuner.js"></script>
+  <script src = "meter.js"></script>
+  <script src="app.js"></script>
 
-      <button id = "firstStr" onclick = "config.selectedString = 1; config.mode = 'standardStrict';">E(1 string)</button>
-      <button id = "secondStr" onclick = "config.selectedString = 2; config.mode = 'standardStrict';">B(2 string)</button>
-      <button id = "thirdStr" onclick = "config.selectedString = 3; config.mode = 'standardStrict';">G(3 string)</button>
-      <button id = "fourthStr" onclick = "config.selectedString = 4; config.mode = 'standardStrict';">D(4 string)</button>
-      <button id = "fifthStr" onclick = "config.selectedString = 5; config.mode = 'standardStrict';">A(5 string)</button>
-      <button id = "sixthStr" onclick = "config.selectedString = 6; config.mode = 'standardStrict';">E(6 string)</button>
-    </div>
+  <center><h2>Tune your guitar!</h2></center>
+  <h4>Choose mode</h4>
+  <button id = "allNotes" onclick = "config.mode = 'allNotes';">All notes</button>
+    
+  <button id = "standardAuto" onclick = "config.mode = 'standardAuto';">Standard auto</button>
+
+  <button id = "firstStr" onclick = "config.selectedString = 1; config.mode = 'standardStrict';">E(1 string)</button>
+  <button id = "secondStr" onclick = "config.selectedString = 2; config.mode = 'standardStrict';">B(2 string)</button>
+  <button id = "thirdStr" onclick = "config.selectedString = 3; config.mode = 'standardStrict';">G(3 string)</button>
+  <button id = "fourthStr" onclick = "config.selectedString = 4; config.mode = 'standardStrict';">D(4 string)</button>
+  <button id = "fifthStr" onclick = "config.selectedString = 5; config.mode = 'standardStrict';">A(5 string)</button>
+  <button id = "sixthStr" onclick = "config.selectedString = 6; config.mode = 'standardStrict';">E(6 string)</button>
 </body>
 </html>

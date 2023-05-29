@@ -1,12 +1,12 @@
 const config = {
   mode: 'standardAuto',
   selectedString: 1,
-}
+};
 
 const Tuner = function () {
   this.START_FREQUENCY = 65.41;
   this.OCTAVES = 4;
-  this.MIN_DECIBELS = -40;
+  this.MIN_DECIBELS = -50;
   this.AllNotes = [
     'C',
     'C#',
@@ -60,16 +60,18 @@ Tuner.prototype.tune = function () {
     console.log('Captured');
     const userFrequency = this.getUserFrequency();
     if (userFrequency) {
+      let noteData;
       if (config.mode === 'allNotes') {
-        const noteData = this.modeAll(userFrequency);
+        noteData = this.modeAll(userFrequency);
       }
       else if (config.mode === 'standardAuto') {
-        const noteData = this.modeStandardAuto(userFrequency);
+        noteData = this.modeStandardAuto(userFrequency);
       }
       else if (config.mode === 'standardStrict') {
         const stringNum = this.StandardTune.length;
-        const noteData = this.modeStandardStrict(userFrequency, stringNum - config.selectedString);
+        noteData = this.modeStandardStrict(userFrequency, stringNum - config.selectedString);
       }
+      this.onCaptured(noteData);
     }
   });
 };
@@ -83,7 +85,8 @@ Tuner.prototype.getUserFrequency = function () {
   const binWidth = this.audioCtx.sampleRate / this.analyser.fftSize;
   const userFrequency = frequencyIndex * binWidth;
   if (dataArray[frequencyIndex] > this.MIN_DECIBELS) return userFrequency;
-}
+  else return undefined;
+};
 
 Tuner.prototype.noteNum = function (frequency) {
   const noteNum = 12 * (Math.log(frequency / this.START_FREQUENCY) / Math.log(2));
@@ -93,12 +96,12 @@ Tuner.prototype.noteNum = function (frequency) {
 Tuner.prototype.standardNoteNum = function (chord, octave) {
   const noteNum = this.AllNotes.indexOf(chord) + 12 * (octave - 1);
   return noteNum;
-}
+};
 
 Tuner.prototype.getNoteFrequency = function (noteNum) {
   const frequency = this.START_FREQUENCY * Math.pow(2, noteNum/12);
   return frequency;
-}
+};
 
 Tuner.prototype.nearestAllFrequency = function (frequency) {
   const minFreq = this.getNoteFrequency(0);
@@ -116,7 +119,7 @@ Tuner.prototype.nearestAllFrequency = function (frequency) {
       return nearestFrequency;
     }
   }
-}
+};
 
 Tuner.prototype.nearestStandardFrequency = function (frequency) {
   const length = this.StandardTune.length;
@@ -138,14 +141,14 @@ Tuner.prototype.nearestStandardFrequency = function (frequency) {
       return nearestFrequency;
     }
   }
-}
+};
 
 Tuner.prototype.findNeighbour = function (frequency, prev, next) {
   const delta_prev = frequency - prev;
   const delta_next = next - frequency;
   const neighbour = (delta_prev > delta_next)? next: prev;
   return neighbour;
-}
+};
 
 Tuner.prototype.standardPrevAndNext = function (standardNotePrev, standardNoteNext) {
   const standardNumPrev = this.standardNoteNum(...standardNotePrev);
@@ -154,22 +157,22 @@ Tuner.prototype.standardPrevAndNext = function (standardNotePrev, standardNoteNe
   const next = this.getNoteFrequency(standardNumNext);
 
   return [prev, next];
-}
+};
 
 Tuner.prototype.getOctave = function (noteNum) {
   const octave = Math.ceil(noteNum / 12) + 1;
   return octave;
-}
+};
 
 Tuner.prototype.standardStrictFrequency = function (chord, octave) {
   const standardNum = this.standardNoteNum(chord, octave);
   const strictFrequency = this.getNoteFrequency(standardNum);
   return strictFrequency;
-}
+};
 
 Tuner.prototype.modeAll = function (userFrequency) {
   const nearestFrequency = this.nearestAllFrequency(userFrequency);
-  const delta = Math.abs(nearestFrequency - userFrequency);
+  const delta = userFrequency - nearestFrequency;
   const noteNum = this.noteNum(nearestFrequency);
   const octave = this.getOctave(noteNum);
 
@@ -184,11 +187,11 @@ Tuner.prototype.modeAll = function (userFrequency) {
   console.log(noteData);
 
   return noteData;
-}
+};
 
 Tuner.prototype.modeStandardAuto = function (userFrequency) {
   const nearestFrequency = this.nearestStandardFrequency(userFrequency);
-  const delta = Math.abs(nearestFrequency - userFrequency);
+  const delta = userFrequency - nearestFrequency;
   const noteNum = this.noteNum(nearestFrequency);
   const octave = this.getOctave(noteNum);
 
@@ -203,12 +206,12 @@ Tuner.prototype.modeStandardAuto = function (userFrequency) {
   console.log(noteData);
 
   return noteData;
-}
+};
 
 Tuner.prototype.modeStandardStrict = function (userFrequency, noteIdx) {
   const standardNote = this.StandardTune[noteIdx];
   const strictFrequecy = this.standardStrictFrequency(...standardNote);
-  const delta = Math.abs(userFrequency - strictFrequecy);
+  const delta = userFrequency - strictFrequecy;
   const noteNum = this.standardNoteNum(...standardNote);
   const octave = this.getOctave(noteNum);
 
@@ -223,4 +226,4 @@ Tuner.prototype.modeStandardStrict = function (userFrequency, noteIdx) {
   console.log(noteData);
 
   return noteData;
-}
+};
