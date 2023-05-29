@@ -180,7 +180,7 @@ Tuner.prototype.modeAll = function (userFrequency) {
     userFreq: userFrequency,
     nearestFreq: nearestFrequency,
     delta: delta,
-    noteName: this.AllNotes[(noteNum % 12)],
+    noteName: this.AllNotes[noteNum % 12],
     octave: octave,
   }
 
@@ -199,7 +199,7 @@ Tuner.prototype.modeStandardAuto = function (userFrequency) {
     userFreq: userFrequency,
     nearestFreq: nearestFrequency,
     delta: delta,
-    noteName: this.AllNotes[(noteNum % 12)],
+    noteName: this.AllNotes[noteNum % 12],
     octave: octave,
   }
 
@@ -219,7 +219,7 @@ Tuner.prototype.modeStandardStrict = function (userFrequency, noteIdx) {
     userFreq: userFrequency,
     nearestFreq: strictFrequecy,
     delta: delta,
-    noteName: this.AllNotes[(noteNum % 12)],
+    noteName: this.AllNotes[noteNum % 12],
     octave: octave,
   }
 

@@ -9,13 +9,15 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css" rel="stylesheet">
   
-  <div id="meter-container"></div>
+  <div id="meter-container">
+    <div class="text">1 line ~ 10 Hz</div>
+  </div>
   <script src = "tuner.js"></script>
   <script src = "meter.js"></script>
   <script src="app.js"></script>
 
   <center><h2>Tune your guitar!</h2></center>
-  <h4>Choose mode</h4>
+  <h3>Choose mode</h3>
   <button id = "allNotes" onclick = "config.mode = 'allNotes';">All notes</button>
     
   <button id = "standardAuto" onclick = "config.mode = 'standardAuto';">Standard auto</button>

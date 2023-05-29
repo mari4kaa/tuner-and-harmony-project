@@ -6,9 +6,58 @@ html {
     position: fixed;
     font-family: sans-serif;
     color: #2c3e50;
-    margin: 0;
+    margin: 3;
     width: 100%;
     height: 100%;
     cursor: default;
     user-select: none;
   }
+
+  #meter-container {
+    position: fixed;
+    bottom: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 250px;
+    border: 1px solid black;
+    margin: 20px;
+    overflow: hidden;
+  }
+  
+  .scale-line {
+    position: absolute;
+    bottom: 0;
+    width: 1px;
+    height: 70px;
+    background-color: #aaa;
+  }
+  
+  .central-line {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    height: 90px;
+    background-color: black;
+    transform: translateX(-50%);
+  }
+
+  .pointer {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    height: 100px;
+    background-color: red;
+    transform: translateX(-50%);
+  }
+
+  .text {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
