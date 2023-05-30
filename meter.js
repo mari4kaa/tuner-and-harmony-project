@@ -1,5 +1,5 @@
 const Meter = function () {
-  this.NUM_OF_LINES = 100;
+  this.NUM_OF_LINES = 70;
   this.container = document.getElementById('meter-container');
   this.pointer = undefined;
   this.createScale();
@@ -20,15 +20,20 @@ Meter.prototype.createScale = function () {
   const centralLine = document.createElement('div');
   centralLine.classList.add('central-line');
   centralLine.style.left = `${containerWidth / 2}px`;
-
   this.container.appendChild(centralLine);
 
   this.pointer = document.createElement('div');
   this.pointer.classList.add('pointer');
   this.container.appendChild(this.pointer);
+
+  const metricElement = document.getElementById('metric');
+  const metric = Math.round(this.container.offsetWidth / this.NUM_OF_LINES);
+  metricElement.textContent = `1 line ~ ${metric} Hz`;
 };
 
 
 Meter.prototype.update = function (delta) {
-  this.pointer.style.transform = `translateX(${delta}px)`;
+  const maxDelta = this.container.offsetWidth / 2 - 5;
+  const pointerPosition = delta >= maxDelta? maxDelta: delta;
+  this.pointer.style.transform = `translateX(${pointerPosition}px)`;
 };

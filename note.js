@@ -1,4 +1,4 @@
-function displayNote(note, octave) {
+function displayNote (note, octave) {
   const noteElement = document.getElementById('note');
   const octaveElement = document.getElementById('octave');
 
@@ -9,7 +9,7 @@ function displayNote(note, octave) {
   octaveElement.style.display = 'block';
 }
   
-function hideNote() {
+function hideNote () {
   const noteElement = document.getElementById('note');
   const octaveElement = document.getElementById('octave');
 
