@@ -1,3 +1,5 @@
+'use strict';
+
 const Application = function () {
   this.tuner = new Tuner();
   this.meter = new Meter();

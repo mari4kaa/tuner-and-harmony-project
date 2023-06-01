@@ -1,3 +1,5 @@
+'use strict';
+
 function displayNote (note, octave) {
   const noteElement = document.getElementById('note');
   const octaveElement = document.getElementById('octave');

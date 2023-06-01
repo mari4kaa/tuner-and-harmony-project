@@ -1,3 +1,5 @@
+'use strict';
+
 const Meter = function () {
   this.NUM_OF_LINES = 70;
   this.container = document.getElementById('meter-container');

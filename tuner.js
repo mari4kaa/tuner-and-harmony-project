@@ -1,3 +1,5 @@
+'use strict';
+
 const config = {
   mode: 'standardAuto',
   selectedString: 1,
