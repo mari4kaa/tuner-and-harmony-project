@@ -34,7 +34,6 @@ const Tuner = function () {
 };
 
 Tuner.prototype.init = async function () {
-  console.log('Init started');
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   this.audioCtx = new window.AudioContext();
   this.analyser = new AnalyserNode(this.audioCtx);
@@ -162,7 +161,7 @@ Tuner.prototype.standardPrevAndNext = function (standardNotePrev, standardNoteNe
 };
 
 Tuner.prototype.getOctave = function (noteNum) {
-  const octave = Math.ceil(noteNum / 12) + 1;
+  const octave = Math.ceil(noteNum / 12);
   return octave;
 };
 
@@ -175,7 +174,7 @@ Tuner.prototype.modeAll = function (userFrequency) {
   const noteData = {
     delta: delta,
     noteName: this.AllNotes[noteNum % 12],
-    octave: octave,
+    octave: octave + 1,
   }
 
   console.log(noteData);
@@ -192,7 +191,7 @@ Tuner.prototype.modeStandardAuto = function (userFrequency) {
   const noteData = {
     delta: delta,
     noteName: this.AllNotes[noteNum % 12],
-    octave: octave,
+    octave: octave + 1,
   }
 
   console.log(noteData);
