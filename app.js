@@ -12,9 +12,16 @@ Application.prototype.start = function () {
     self.update(noteData);
   }
 
-  swal.fire('Welcome to the guitar tuner!').then(setTimeout(function () {
-    self.tuner.init();
-  }, 3000))
+  swal.fire({
+    title: 'Welcome to the guitar tuner!',
+    showCancelButton: true,
+    confirmButtonText: 'OK',
+    allowOutsideClick: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      self.tuner.init();
+    }
+  });
 };
 
 Application.prototype.update = function (noteData) {
