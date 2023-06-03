@@ -59,17 +59,13 @@ Tuner.prototype.init = async function () {
 
 Tuner.prototype.tune = function () {
   this.scriptProcessor.addEventListener('audioprocess', () => {
-    console.log('Captured');
     const userFrequency = this.getUserFrequency();
     if (userFrequency) {
       let noteData;
-      if (config.mode === 'allNotes') {
-        noteData = this.autoModes(userFrequency, 'allNotes');
+      if (config.mode !== 'standardStrict') {
+        noteData = this.autoModes(userFrequency, config.mode);
       }
-      else if (config.mode === 'standardAuto') {
-        noteData = this.autoModes(userFrequency, 'standardAuto');
-      }
-      else if (config.mode === 'standardStrict') {
+      else {
         const stringNum = this.StandardTune.length;
         noteData = this.modeStandardStrict(userFrequency, stringNum - config.selectedString);
       }
