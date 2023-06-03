@@ -63,10 +63,10 @@ Tuner.prototype.tune = function () {
     if (userFrequency) {
       let noteData;
       if (config.mode === 'allNotes') {
-        noteData = this.modeAll(userFrequency);
+        noteData = this.autoModes(userFrequency, 'allNotes');
       }
       else if (config.mode === 'standardAuto') {
-        noteData = this.modeStandardAuto(userFrequency);
+        noteData = this.autoModes(userFrequency, 'standardAuto');
       }
       else if (config.mode === 'standardStrict') {
         const stringNum = this.StandardTune.length;
@@ -109,7 +109,7 @@ Tuner.prototype.nearestAllFrequency = function (frequency) {
   const maxFreq = this.getNoteFrequency((this.AllNotes.length * this.OCTAVES) - 1);
 
   if (frequency <= minFreq) return minFreq;
-  else if (frequency >= maxFreq) return maxFreq;
+  if (frequency >= maxFreq) return maxFreq;
 
   const allNotes = this.AllNotes.length * this.OCTAVES;
   for (let i = 0; i < allNotes; i++) {
@@ -131,7 +131,7 @@ Tuner.prototype.nearestStandardFrequency = function (frequency) {
   const maxFreq = this.getNoteFrequency(numOfMax);
 
   if (frequency <= minFreq) return minFreq;
-  else if (frequency >= maxFreq) return maxFreq;
+  if (frequency >= maxFreq) return maxFreq;
 
   for (let i = 0; i < length - 1; i++) {
     const standardNotePrev = this.StandardTune[i];
@@ -147,7 +147,7 @@ Tuner.prototype.nearestStandardFrequency = function (frequency) {
 Tuner.prototype.findNeighbour = function (frequency, prev, next) {
   const delta_prev = frequency - prev;
   const delta_next = next - frequency;
-  const neighbour = (delta_prev > delta_next)? next: prev;
+  const neighbour = (delta_prev > delta_next) ? next : prev;
   return neighbour;
 };
 
@@ -165,25 +165,11 @@ Tuner.prototype.getOctave = function (noteNum) {
   return octave;
 };
 
-Tuner.prototype.modeAll = function (userFrequency) {
-  const nearestFrequency = this.nearestAllFrequency(userFrequency);
-  const delta = userFrequency - nearestFrequency;
-  const noteNum = this.noteNum(nearestFrequency);
-  const octave = this.getOctave(noteNum);
-
-  const noteData = {
-    delta: delta,
-    noteName: this.AllNotes[noteNum % 12],
-    octave: octave + 1,
-  }
-
-  console.log(noteData);
-
-  return noteData;
-};
-
-Tuner.prototype.modeStandardAuto = function (userFrequency) {
-  const nearestFrequency = this.nearestStandardFrequency(userFrequency);
+Tuner.prototype.autoModes = function (userFrequency, mode) {
+  const nearestFrequency = (mode === 'allNotes') ? 
+    this.nearestAllFrequency(userFrequency) :
+    this.nearestStandardFrequency(userFrequency);
+  
   const delta = userFrequency - nearestFrequency;
   const noteNum = this.noteNum(nearestFrequency);
   const octave = this.getOctave(noteNum);
