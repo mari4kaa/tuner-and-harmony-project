@@ -2,6 +2,7 @@
 
 const Meter = function () {
   this.NUM_OF_LINES = 70;
+  this.BORDER = 5;
   this.container = document.getElementById('meter-container');
   this.pointer = undefined;
   this.createScale();
@@ -35,7 +36,7 @@ Meter.prototype.createScale = function () {
 
 
 Meter.prototype.update = function (delta) {
-  const maxDelta = this.container.offsetWidth / 2 - 5;
+  const maxDelta = this.container.offsetWidth / 2 - this.BORDER;
   const pointerPosition = delta >= maxDelta? maxDelta: delta;
   this.pointer.style.transform = `translateX(${pointerPosition}px)`;
 };

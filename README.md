@@ -7,6 +7,6 @@ It's a tuner based on web audio api which can work in three modes:
 
 ## For what stands each file?
 
-- **tuner.js** is the main part of the project.
-- **app.js** connects tuner and UI.
-- *meter.js, note.js, index.html, style.css* - UI.
+- **tuner.js** contains the main logic of the project.
+- **app.js** the main file which connects tuner and UI.
+- **meter.js, note.js,** *index.html, style.css* - UI.
