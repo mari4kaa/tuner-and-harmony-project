@@ -109,7 +109,7 @@ Tuner.prototype.nearestAllFrequency = function (frequency) {
   if (frequency >= maxFreq) return maxFreq;
 
   const allNotes = this.AllNotes.length * this.OCTAVES;
-  for (let i = 0; i < allNotes; i++) {
+  for (let i = 0; i < allNotes - 1; i++) {
     const prev = this.getNoteFrequency(i);
     const next = this.getNoteFrequency(i + 1);
     if(frequency >= prev && frequency <= next) {
