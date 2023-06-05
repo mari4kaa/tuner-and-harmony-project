@@ -25,12 +25,12 @@ const Tuner = function() {
     'B',
   ];
   this.StandardTune = [
-    ['E', 1],
-    ['A', 1],
-    ['D', 2],
-    ['G', 2],
-    ['B', 2],
-    ['E', 3],
+    ['E', 2],
+    ['A', 2],
+    ['D', 3],
+    ['G', 3],
+    ['B', 3],
+    ['E', 4],
   ];
 };
 
@@ -90,14 +90,15 @@ Tuner.prototype.noteNum = function(nearestFrequency) {
   return Math.round(noteNum);
 };
 
-Tuner.prototype.standardNoteNum = function(note, octave) {
-  const noteIdx = this.AllNotes.indexOf(note);
-  const noteNum = noteIdx + this.TOTAL_NOTES_COUNT * (octave - 1);
+Tuner.prototype.standardNoteNum = function(noteName, noteOctave) {
+  const noteIdx = this.AllNotes.indexOf(noteName);
+  const octavesCount = noteOctave - 2;
+  const noteNum = noteIdx + this.TOTAL_NOTES_COUNT * octavesCount;
   return noteNum;
 };
 
 Tuner.prototype.getOctave = function(noteNum) {
-  const octave = Math.ceil(noteNum / this.TOTAL_NOTES_COUNT);
+  const octave = Math.ceil(noteNum / this.TOTAL_NOTES_COUNT) + 1;
   return octave;
 };
 
@@ -168,14 +169,16 @@ Tuner.prototype.autoModes = function(userFrequency, mode) {
     this.nearestAllFrequency(userFrequency) :
     this.nearestStandardFrequency(userFrequency);
 
-  const delta = userFrequency - nearestFrequency;
+  const deltaFreq = userFrequency - nearestFrequency;
   const noteNum = this.noteNum(nearestFrequency);
-  const octave = this.getOctave(noteNum);
+  const noteName = this.AllNotes[noteNum % this.TOTAL_NOTES_COUNT];
 
   const noteData = {
-    delta: delta,
-    noteName: this.AllNotes[noteNum % this.TOTAL_NOTES_COUNT],
-    octave: octave + 1,
+    delta: deltaFreq,
+    note: noteName,
+    octave: this.getOctave(noteNum),
+    expectedFreq: nearestFrequency,
+    freq: userFrequency,
   };
 
   console.log(noteData);
@@ -185,15 +188,17 @@ Tuner.prototype.autoModes = function(userFrequency, mode) {
 
 Tuner.prototype.modeStandardStrict = function(userFrequency, stringIdx) {
   const standardNote = this.StandardTune[stringIdx];
-  const [note, octave] = standardNote;
-  const noteNum = this.standardNoteNum(note, octave);
+  const [noteName, noteOctave] = standardNote;
+  const noteNum = this.standardNoteNum(noteName, noteOctave);
   const strictFrequency = this.getNoteFrequency(noteNum);
-  const delta = userFrequency - strictFrequency;
+  const deltaFreq = userFrequency - strictFrequency;
 
   const noteData = {
-    delta: delta,
-    noteName: note,
-    octave: octave + 1,
+    delta: deltaFreq,
+    note: noteName,
+    octave: noteOctave,
+    expectedFreq: strictFrequency,
+    freq: userFrequency,
   };
 
   console.log(noteData);

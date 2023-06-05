@@ -3,14 +3,14 @@
 const Application = function() {
   this.tuner = new Tuner();
   this.meter = new Meter();
-}
+};
 
 Application.prototype.start = function() {
   const self = this;
 
   self.tuner.onCaptured = function(noteData) {
     self.update(noteData);
-  }
+  };
 
   swal.fire({
     title: 'Welcome to the guitar tuner!',
@@ -26,7 +26,7 @@ Application.prototype.start = function() {
 
 Application.prototype.update = function(noteData) {
   hideNote();
-  displayNote(noteData.noteName, noteData.octave);
+  displayNote(noteData.note, noteData.octave);
   this.meter.update(noteData.delta);
 };
 
