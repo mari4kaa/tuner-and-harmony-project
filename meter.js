@@ -1,6 +1,6 @@
 'use strict';
 
-const Meter = function () {
+const Meter = function() {
   this.NUM_OF_LINES = 70;
   this.BORDER = 5;
   this.container = document.getElementById('meter-container');
@@ -8,7 +8,7 @@ const Meter = function () {
   this.createScale();
 };
 
-Meter.prototype.createScale = function () {
+Meter.prototype.createScale = function() {
   const containerWidth = this.container.offsetWidth;
   const lineGap = containerWidth / this.NUM_OF_LINES;
 
@@ -34,9 +34,8 @@ Meter.prototype.createScale = function () {
   metricElement.textContent = `1 line ~ ${metric} Hz`;
 };
 
-
-Meter.prototype.update = function (delta) {
+Meter.prototype.update = function(delta) {
   const maxDelta = this.container.offsetWidth / 2 - this.BORDER;
-  const pointerPosition = delta >= maxDelta? maxDelta: delta;
+  const pointerPosition = delta >= maxDelta ? maxDelta : delta;
   this.pointer.style.transform = `translateX(${pointerPosition}px)`;
 };

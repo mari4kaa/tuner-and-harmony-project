@@ -1,14 +1,14 @@
 'use strict';
 
-const Application = function () {
+const Application = function() {
   this.tuner = new Tuner();
   this.meter = new Meter();
 }
 
-Application.prototype.start = function () {
+Application.prototype.start = function() {
   const self = this;
 
-  self.tuner.onCaptured = function (noteData) {
+  self.tuner.onCaptured = function(noteData) {
     self.update(noteData);
   }
 
@@ -24,7 +24,7 @@ Application.prototype.start = function () {
   });
 };
 
-Application.prototype.update = function (noteData) {
+Application.prototype.update = function(noteData) {
   hideNote();
   displayNote(noteData.noteName, noteData.octave);
   this.meter.update(noteData.delta);
