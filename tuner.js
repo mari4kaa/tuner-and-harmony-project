@@ -175,10 +175,8 @@ Tuner.prototype.autoModes = function(userFrequency, mode) {
 
   const noteData = {
     delta: deltaFreq,
-    note: noteName,
+    name: noteName,
     octave: this.getOctave(noteNum),
-    expectedFreq: nearestFrequency,
-    freq: userFrequency,
   };
 
   console.log(noteData);
@@ -195,10 +193,8 @@ Tuner.prototype.modeStandardStrict = function(userFrequency, stringIdx) {
 
   const noteData = {
     delta: deltaFreq,
-    note: noteName,
+    name: noteName,
     octave: noteOctave,
-    expectedFreq: strictFrequency,
-    freq: userFrequency,
   };
 
   console.log(noteData);

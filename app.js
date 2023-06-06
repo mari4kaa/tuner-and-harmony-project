@@ -3,6 +3,7 @@
 const Application = function() {
   this.tuner = new Tuner();
   this.meter = new Meter();
+  this.note = new Note();
 };
 
 Application.prototype.start = function() {
@@ -25,8 +26,8 @@ Application.prototype.start = function() {
 };
 
 Application.prototype.update = function(noteData) {
-  hideNote();
-  displayNote(noteData.note, noteData.octave);
+  this.note.hideNote();
+  this.note.displayNote(noteData.name, noteData.octave);
   this.meter.update(noteData.delta);
 };
 

@@ -1,20 +1,19 @@
 'use strict';
 
-function displayNote(note, octave) {
-  const noteElement = document.getElementById('note');
-  const octaveElement = document.getElementById('octave');
+const Note = function() {
+  this.noteElement = document.getElementById('note');
+  this.octaveElement = document.getElementById('octave');
+};
 
-  noteElement.textContent = note;
-  octaveElement.textContent = octave;
+Note.prototype.displayNote = function(note, octave) {
+  this.noteElement.textContent = note;
+  this.octaveElement.textContent = octave;
 
-  noteElement.style.display = 'block';
-  octaveElement.style.display = 'block';
-}
+  this.noteElement.style.display = 'block';
+  this.octaveElement.style.display = 'block';
+};
 
-function hideNote() {
-  const noteElement = document.getElementById('note');
-  const octaveElement = document.getElementById('octave');
-
-  noteElement.style.display = 'none';
-  octaveElement.style.display = 'none';
-}
+Note.prototype.hideNote = function() {
+  this.noteElement.style.display = 'none';
+  this.octaveElement.style.display = 'none';
+};
