@@ -21,6 +21,7 @@ Application.prototype.start = function() {
   }).then((result) => {
     if (result.isConfirmed) {
       self.tuner.init();
+      self.tuner.tune();
     }
   });
 };

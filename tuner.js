@@ -49,7 +49,6 @@ Tuner.prototype.init = async function() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     window.localStream = stream;
     this.audioCtx.createMediaStreamSource(stream).connect(this.analyser);
-    this.tune();
   } catch (err) {
     console.error(`Error: ${err}`);
   }
