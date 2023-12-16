@@ -1,9 +1,11 @@
 'use strict';
 
-const Note = function() {
-  this.noteElement = document.getElementById('note');
-  this.octaveElement = document.getElementById('octave');
-};
+class Note {
+  constructor() {
+    this.noteElement = document.getElementById('note');
+    this.octaveElement = document.getElementById('octave');
+  }
+}
 
 Note.prototype.displayNote = function(note, octave) {
   this.noteElement.textContent = note;
@@ -17,3 +19,5 @@ Note.prototype.hideNote = function() {
   this.noteElement.style.display = 'none';
   this.octaveElement.style.display = 'none';
 };
+
+module.exports = Note;

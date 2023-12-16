@@ -1,12 +1,14 @@
 'use strict';
 
-const Meter = function() {
-  this.NUM_OF_LINES = 70;
-  this.BORDER = 5;
-  this.container = document.getElementById('meter-container');
-  this.pointer = undefined;
-  this.createScale();
-};
+class Meter {
+  constructor() {
+    this.NUM_OF_LINES = 70;
+    this.BORDER = 5;
+    this.container = document.getElementById('meter-container');
+    this.pointer = undefined;
+    this.createScale();
+  }
+}
 
 Meter.prototype.createScale = function() {
   const containerWidth = this.container.offsetWidth;
@@ -39,3 +41,5 @@ Meter.prototype.update = function(delta) {
   const pointerPosition = delta >= maxDelta ? maxDelta : delta;
   this.pointer.style.transform = `translateX(${pointerPosition}px)`;
 };
+
+module.exports = Meter;
