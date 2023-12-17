@@ -1,8 +1,8 @@
 'use strict';
 
 const Tuner = require('./tuner.js');
-const Meter = require('./meter.js');
-const Note = require('./note.js');
+const Meter = require('./user-interface/UI-tuner/meter.js');
+const Note = require('./user-interface/UI-tuner/note.js');
 
 class Application {
   constructor() {

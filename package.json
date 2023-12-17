@@ -1,16 +1,16 @@
 {
   "name": "tuner-and-harmony-project",
   "version": "1.0.0",
-  "description": "It's a tuner based on web audio api which can work in three modes:\r - **'All notes'** - user has access to all notes, including flat and sharp ones, and can tune string to any of them.\r - **'Standard auto'** - tuner automatically understands what string user is trying to tune. (supports only standard tuning)\r - **'Standard strict'** - user can choose one string and tune it individually. (supports only standard tuning)",
   "type": "commonjs",
-  "main": "server.js",
+  "main": "src/server.js",
+  "author": "Mariia Kryvokhata <m.krivokhata@gmail.com>",
+  "license": "ISC",
+  "description": "It's a tuner based on web audio api which can work in three modes:\r - **'All notes'** - user has access to all notes, including flat and sharp ones, and can tune string to any of them.\r - **'Standard auto'** - tuner automatically understands what string user is trying to tune. (supports only standard tuning)\r - **'Standard strict'** - user can choose one string and tune it individually. (supports only standard tuning)",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node src/server.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "eslint": "^8.42.0",
     "eslint-config-standard": "^17.1.0",
