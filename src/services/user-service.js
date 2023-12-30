@@ -1,16 +1,15 @@
 const pool = require('../pool');
+const userQuery = require('../repositories/user-repository');
 
 const comparePasswords = async (inputPassword, hashedPassword) => {
-  const query = `
-  SELECT $1 = crypt($2, $3) as match`;
+  const query = userQuery.paswdCompare;
 
   const { rows } = await pool.query(query, [true, inputPassword, hashedPassword]);
   return rows[0].match;
 };
 
 const userExists = async (userId) => {
-  const query = `
-  SELECT 1 FROM users WHERE id = $1`;
+  const query = userQuery.userExists;
 
   const { rows } = await pool.query(query, [userId]);
   return rows;
@@ -19,10 +18,7 @@ const userExists = async (userId) => {
 class UserService {
   async signUp({ login, password, email }) {
     try {
-      const query = `
-        INSERT INTO users (login, password, email)
-        VALUES ($1, crypt($2, gen_salt('bf')), $3)
-        RETURNING *`;
+      const query = userQuery.signUp;
 
       const { rows } = await pool.query(query, [login, password, email]);
       return rows[0];
@@ -35,9 +31,7 @@ class UserService {
   }
 
   async signIn({ login, password }) {
-    const query = `
-    SELECT * FROM users 
-    WHERE login = $1`;
+    const query = userQuery.signIn;
 
     const { rows } = await pool.query(query, [login]);
     const user = rows[0];
@@ -49,26 +43,19 @@ class UserService {
     return user;
   }
 
+  async update({ login, password, email }, userId) {
+    const query = userQuery.update;
+
+    const { rows } = await pool.query(query, [login, password, email, userId]);
+    return rows[0];
+  }
+
   async delete(userId) {
     const existingUser = await userExists(userId);
     if (!existingUser.length) throw new Error('User not found');
 
-    const query = `
-    DELETE FROM users
-    WHERE id = $1
-    RETURNING *`;
+    const query = userQuery.del;
     const { rows } = await pool.query(query, [userId]);
-    return rows[0];
-  }
-
-  async update({ login, password, email, userId }) {
-    const query = `
-      UPDATE users
-      SET login = $1, password = crypt($2, gen_salt('bf')), email = $3
-      WHERE id = $4
-      RETURNING *`;
-
-    const { rows } = await pool.query(query, [login, password, email, userId]);
     return rows[0];
   }
 }

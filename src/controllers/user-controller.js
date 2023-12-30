@@ -31,10 +31,10 @@ class UserController {
     }
   }
 
-  async update(req, res) {
+  async update(req, res, userId) {
     try {
       const updatedUser = req.body;
-      const deletedUser = await this.userService.update(updatedUser);
+      const deletedUser = await this.userService.update(updatedUser, userId);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(deletedUser));
     } catch (error) {
