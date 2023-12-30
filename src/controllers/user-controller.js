@@ -30,6 +30,31 @@ class UserController {
       res.end(`${error}`);
     }
   }
+
+  async update(req, res) {
+    try {
+      const updatedUser = req.body;
+      const deletedUser = await this.userService.update(updatedUser);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(deletedUser));
+    } catch (error) {
+      console.error(error);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end(`${error}`);
+    }
+  }
+
+  async delete(req, res, userId) {
+    try {
+      const deletedUser = await this.userService.delete(userId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(deletedUser));
+    } catch (error) {
+      console.error(error);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end(`${error}`);
+    }
+  }
 }
 
 module.exports = UserController;
