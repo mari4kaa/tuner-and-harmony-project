@@ -1,16 +1,14 @@
 const pool = require('../pool');
 const userQuery = require('../repositories/user-repository');
 
-const comparePasswords = async (inputPassword, hashedPassword) => {
+const comparePasswords = async (inputPassword, hashedPassword, userId) => {
   const query = userQuery.paswdCompare;
-
-  const { rows } = await pool.query(query, [true, inputPassword, hashedPassword]);
+  const { rows } = await pool.query(query, [inputPassword, hashedPassword, userId]);
   return rows[0].match;
 };
 
 const userExists = async (userId) => {
   const query = userQuery.userExists;
-
   const { rows } = await pool.query(query, [userId]);
   return rows;
 };
@@ -19,7 +17,6 @@ class UserService {
   async signUp({ login, password, email }) {
     try {
       const query = userQuery.signUp;
-
       const { rows } = await pool.query(query, [login, password, email]);
       return rows[0];
     } catch (error) {
@@ -31,13 +28,12 @@ class UserService {
   }
 
   async signIn({ login, password }) {
-    const query = userQuery.signIn;
-
+    const query =  userQuery.signIn;
     const { rows } = await pool.query(query, [login]);
     const user = rows[0];
     if (!user) throw new Error('Invalid credentials');
 
-    const pwMatches = await comparePasswords(password, user.password);
+    const pwMatches = await comparePasswords(password, user.password, user.id);
     if (!pwMatches) throw new Error('Wrong password');
 
     return user;
@@ -45,7 +41,6 @@ class UserService {
 
   async update({ login, password, email }, userId) {
     const query = userQuery.update;
-
     const { rows } = await pool.query(query, [login, password, email, userId]);
     return rows[0];
   }

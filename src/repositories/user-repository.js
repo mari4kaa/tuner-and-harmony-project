@@ -22,7 +22,9 @@ const userExists = `
 SELECT 1 FROM users WHERE id = $1`;
 
 const paswdCompare = `
-SELECT $1 = crypt($2, $3) as match`;
+SELECT ($2 = crypt($1, $2)) as match 
+FROM users
+WHERE users.id = $3`;
 
 const userQuery = {
   signUp,
