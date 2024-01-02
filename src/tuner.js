@@ -73,9 +73,9 @@ class Tuner {
     return undefined;
   }
 
-  noteNum(frequency, startFrequency, notesCount) {
-    const octaveCoef = Math.log(frequency / startFrequency) / Math.log(2);
-    const noteNum = notesCount * octaveCoef;
+  noteNum(frequency) {
+    const octaveCoef = Math.log(frequency / this.START_FREQUENCY) / Math.log(2);
+    const noteNum = this.TOTAL_NOTES_COUNT * octaveCoef;
     return Math.round(noteNum);
   }
 
