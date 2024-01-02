@@ -14,52 +14,49 @@ class Application {
     this.meter = new Meter();
     this.note = new Note();
   }
+
+  start() {
+    const onCaptured = (noteData) => {
+      this.update(noteData);
+    };
+
+    swal.fire({
+      title: 'Welcome to the guitar tuner!',
+      showCancelButton: false,
+      confirmButtonText: 'OK',
+      allowOutsideClick: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.tuner.init();
+        this.tuner.tune(onCaptured);
+      }
+    });
+  }
+
+  update(noteData) {
+    this.note.hideNote();
+    this.note.displayNote(noteData.name, noteData.octave);
+    this.meter.update(noteData.delta);
+  }
 }
 
-Application.prototype.start = function() {
-  const self = this;
-
-  const onCaptured = function(noteData) {
-    self.update(noteData);
-  };
-
-  swal.fire({
-    title: 'Welcome to the guitar tuner!',
-    showCancelButton: true,
-    confirmButtonText: 'OK',
-    allowOutsideClick: false
-  }).then((result) => {
-    if (result.isConfirmed) {
-      self.tuner.init();
-      self.tuner.tune(onCaptured);
-    }
+const addClickListener = function(app, elementId, configProperties) {
+  document.getElementById(elementId).addEventListener('click', () => {
+    Object.assign(app.tuner.config, configProperties);
   });
-};
-
-Application.prototype.update = function(noteData) {
-  this.note.hideNote();
-  this.note.displayNote(noteData.name, noteData.octave);
-  this.meter.update(noteData.delta);
 };
 
 const app = new Application();
 
-document.addEventListener('DOMContentLoaded', function () {
-  Application.prototype.addClickListener = function (elementId, configProperties) {
-    const self = this;
-    document.getElementById(elementId).addEventListener('click', () => {
-      Object.assign(self.tuner.config, configProperties);
-    });
-  }
-
-  app.addClickListener('allNotes', { mode: 'allNotes' });
-  app.addClickListener('standardAuto', { mode: 'standardAuto' });
-  app.addClickListener('firstStr', { selectedString: 1, mode: 'standardStrict' });
-  app.addClickListener('secondStr', { selectedString: 2, mode: 'standardStrict' });
-  app.addClickListener('thirdStr', { selectedString: 3, mode: 'standardStrict' });
-  app.addClickListener('fourthStr', { selectedString: 4, mode: 'standardStrict' });
-  app.addClickListener('fifthStr', { selectedString: 5, mode: 'standardStrict' });
-  app.addClickListener('sixthStr', { selectedString: 6, mode: 'standardStrict' });
+document.addEventListener('DOMContentLoaded', () => {
+  addClickListener(app, 'allNotes', { mode: 'allNotes' });
+  addClickListener(app, 'standardAuto', { mode: 'standardAuto' });
+  addClickListener(app, 'firstStr', { selectedString: 1, mode: 'standardStrict' });
+  addClickListener(app, 'secondStr', { selectedString: 2, mode: 'standardStrict' });
+  addClickListener(app, 'thirdStr', { selectedString: 3, mode: 'standardStrict' });
+  addClickListener(app, 'fourthStr', { selectedString: 4, mode: 'standardStrict' });
+  addClickListener(app, 'fifthStr', { selectedString: 5, mode: 'standardStrict' });
+  addClickListener(app, 'sixthStr', { selectedString: 6, mode: 'standardStrict' });
 });
 
 app.start();
