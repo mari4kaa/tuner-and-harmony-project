@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Message {
+  id            Int             @id @default(autoincrement())
+  content       String          @db.VarChar(240)
+  created_at    DateTime        @default(now()) @db.Timestamp(6)
+  sheduled_at   DateTime        @db.Timestamp(6)
+  notifications Notification[]
+  @@map("messages")
+}
+
+model Notification {
+  user_id    Int
+  message_id Int
+  messages   Message @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  users      User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, message_id])
+  @@map("notifications")
+}
+
+model Song {
+  id            Int             @id @default(autoincrement())
+  content       String          @db.VarChar(3000)
+  created_at    DateTime        @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?        @db.Timestamp(6)
+  playlist      Playlist[]        
+  @@map("songs")
+}
+
+model Playlist {
+  user_id   Int
+  song_id   Int
+  songs     Song    @relation(fields: [song_id], references: [id], onDelete: Cascade)
+  users     User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, song_id])
+  @@map("playlist")
+}
+
+model Task {
+  id          Int            @id @default(autoincrement())
+  title       String         @db.VarChar(50)
+  status      task_status    @default(inactive)
+  description String?        @db.VarChar(500)
+  deadline    DateTime?      @db.Timestamp(6)
+  created_at  DateTime       @default(now()) @db.Timestamp(6)
+  updated_at  DateTime?      @db.Timestamp(6)
+  tasklist    TaskList[]
+
+  @@map("tasks")
+}
+
+model TaskList {
+  user_id   Int
+  task_id   Int
+  tasks     Task    @relation(fields: [task_id], references: [id], onDelete: Cascade)
+  users     User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, task_id])
+  @@map("tasklist")
+}
+
+model User {
+  id            Int              @id @default(autoincrement())
+  login         String           @unique @db.VarChar(30)
+  password      String           @db.VarChar(256)
+  email         String           @unique @db.VarChar(40)
+  avatar        String?          @db.VarChar(200)
+  created_at    DateTime         @default(now()) @db.Timestamp(6)
+  updated_at    DateTime?        @db.Timestamp(6)
+  notifications Notification[]
+  playlist      Playlist[]
+  tasklist      TaskList[]
+
+  @@map("users")
+}
+
+enum task_status {
+  active
+  inactive
+}

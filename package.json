@@ -1,0 +1,30 @@
+{
+  "name": "tuner-and-harmony-project",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "author": "Mariia Kryvokhata <m.krivokhata@gmail.com>",
+  "license": "ISC",
+  "description": "It's a tuner based on web audio api which can work in three modes:\r - **'All notes'** - user has access to all notes, including flat and sharp ones, and can tune string to any of them.\r - **'Standard auto'** - tuner automatically understands what string user is trying to tune. (supports only standard tuning)\r - **'Standard strict'** - user can choose one string and tune it individually. (supports only standard tuning)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "eslint": "^8.42.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^16.0.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "nodemon": "^3.0.2",
+    "prisma": "^5.7.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.0",
+    "argon2": "^0.31.2",
+    "client-sessions": "^0.8.0",
+    "pg": "^8.11.3",
+    "sweetalert2": "^11.6.13"
+  }
+}

@@ -1,38 +1,36 @@
 'use strict';
 
-const config = {
-  mode: 'standardAuto',
-  selectedString: 1,
-};
-
-const Tuner = function() {
-  this.START_FREQUENCY = 65.41;
-  this.OCTAVES = 4;
-  this.MIN_DECIBELS = -50;
-  this.TOTAL_NOTES_COUNT = 12;
-  this.AllNotes = [
-    'C',
-    'C#',
-    'D',
-    'D#',
-    'E',
-    'F',
-    'F#',
-    'G',
-    'G#',
-    'A',
-    'A#',
-    'B',
-  ];
-  this.StandardTune = [
-    ['E', 2],
-    ['A', 2],
-    ['D', 3],
-    ['G', 3],
-    ['B', 3],
-    ['E', 4],
-  ];
-};
+class Tuner {
+  constructor(defaultConfig) {
+    this.config = defaultConfig;
+    this.START_FREQUENCY = 65.41;
+    this.OCTAVES = 4;
+    this.MIN_DECIBELS = -50;
+    this.TOTAL_NOTES_COUNT = 12;
+    this.AllNotes = [
+      'C',
+      'C#',
+      'D',
+      'D#',
+      'E',
+      'F',
+      'F#',
+      'G',
+      'G#',
+      'A',
+      'A#',
+      'B',
+    ];
+    this.StandardTune = [
+      ['E', 2],
+      ['A', 2],
+      ['D', 3],
+      ['G', 3],
+      ['B', 3],
+      ['E', 4],
+    ];
+  }
+}
 
 Tuner.prototype.init = async function() {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -54,18 +52,18 @@ Tuner.prototype.init = async function() {
   }
 };
 
-Tuner.prototype.tune = function() {
+Tuner.prototype.tune = function(onCapturedCb) {
   this.scriptProcessor.addEventListener('audioprocess', () => {
     const userFrequency = this.getUserFrequency();
     if (userFrequency) {
       let noteData;
-      if (config.mode !== 'standardStrict') {
-        noteData = this.autoModes(userFrequency, config.mode);
+      if (this.config.mode !== 'standardStrict') {
+        noteData = this.autoModes(userFrequency, this.config.mode);
       } else {
-        const stringIdx = this.StandardTune.length - config.selectedString;
+        const stringIdx = this.StandardTune.length - this.config.selectedString;
         noteData = this.modeStandardStrict(userFrequency, stringIdx);
       }
-      this.onCaptured(noteData);
+      onCapturedCb(noteData);
     }
   });
 };
@@ -199,3 +197,5 @@ Tuner.prototype.modeStandardStrict = function(userFrequency, stringIdx) {
 
   return noteData;
 };
+
+module.exports = Tuner;
