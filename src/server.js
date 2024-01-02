@@ -13,6 +13,20 @@ const sessionMiddleware = sessions({
   duration: 24 * 60 * 60 * 1000,
 });
 
+const handleFileRequest = (res, req, filePath, contentType) => {
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.log('Request unknown URL', req.url);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Unknown URL');
+    } else {
+      console.log('Request URL', req.url);
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(data);
+    }
+  });
+};
+
 http.createServer((req, res) => {
   sessionMiddleware(req, res, () => {
     let data = '';
@@ -20,15 +34,20 @@ http.createServer((req, res) => {
       data += chunk;
     });
 
-    if (req.url === '/signup' && req.method === 'POST') {
+    if (req.url === '/') {
+      const indexPath = path.join(__dirname, 'index.html');
+      handleFileRequest(res, req, indexPath, 'text/html');
+    } else if (req.url === '/signup' && req.method === 'POST') {
       req.on('end', () => {
         req.body = JSON.parse(data);
+        console.log('Received sign-up request:', req.url);
         const newUser = userController.signUp(req, res);
         req.session.user = newUser;
       });
     } else if (req.url === '/signin' && req.method === 'POST') {
       req.on('end', () => {
         req.body = JSON.parse(data);
+        console.log('Received sign-in request:', req.url);
         const authUser = userController.signIn(req, res);
         req.session.user = authUser;
       });
@@ -62,16 +81,7 @@ http.createServer((req, res) => {
       const contentType = (path.extname(filePath) === '.css') ?
         'text/css' :
         'application/javascript';
-
-      fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-          res.writeHead(500, { 'Content-Type': 'text/plain' });
-          res.end('Internal Server Error');
-        } else {
-          res.writeHead(200, { 'Content-Type': contentType });
-          res.end(data);
-        }
-      });
+      handleFileRequest(res, req, filePath, contentType);
     }
   });
 }).listen(port, () => {
