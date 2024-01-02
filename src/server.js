@@ -28,9 +28,11 @@ const handleFileRequest = (res, req, filePath, contentType) => {
 };
 
 const routeHandlers = {
-  '/': (req, res) => {
-    const indexPath = path.join(__dirname, 'index.html');
-    handleFileRequest(res, req, indexPath, 'text/html');
+  '/': {
+    GET: (req, res) => {
+      const indexPath = path.join(__dirname, 'index.html');
+      handleFileRequest(res, req, indexPath, 'text/html');
+    }
   },
   '/signup': {
     POST: (req, res) => {
@@ -81,6 +83,7 @@ const routeHandlers = {
 };
 
 const formShortUrl = (url) => {
+  if (url === '/') return url;
   const urlParts = url.split('/')
     .filter(Boolean)
     .map((part) => `/${part}`);
@@ -104,10 +107,10 @@ http.createServer((req, res) => {
     req.on('end', () => {
       const shortUrl = formShortUrl(req.url);
       console.log(shortUrl);
-      const routeHandler = routeHandlers[shortUrl][req.method];
+      const routeHandler = routeHandlers[shortUrl] && routeHandlers[shortUrl][req.method];
 
       if (routeHandler) {
-        req.body = JSON.parse(data);
+        if (data) req.body = JSON.parse(data);
         routeHandler(req, res, data);
       } else {
         const filePath = path.join(__dirname, req.url);
