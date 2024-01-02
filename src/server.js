@@ -27,6 +27,73 @@ const handleFileRequest = (res, req, filePath, contentType) => {
   });
 };
 
+const routeHandlers = {
+  '/': (req, res) => {
+    const indexPath = path.join(__dirname, 'index.html');
+    handleFileRequest(res, req, indexPath, 'text/html');
+  },
+  '/signup': {
+    POST: (req, res) => {
+      console.log('Received sign-up request:', req.url);
+      const newUser = userController.signUp(req, res);
+      req.session.user = newUser;
+    },
+  },
+  '/signin': {
+    POST: (req, res) => {
+      console.log('Received sign-in request:', req.url);
+      const authUser = userController.signIn(req, res);
+      req.session.user = authUser;
+    },
+  },
+  '/signout': {
+    POST: (req, res) => {
+      req.session.destroy(() => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end();
+      });
+    },
+  },
+  '/users': {
+    PATCH: (req, res) => {
+      const urlParts = req.url.split('/');
+      const userId = parseInt(urlParts[urlParts.length - 1], 10);
+
+      if (urlParts.length === 3 && !isNaN(userId)) {
+        userController.update(req, res, userId);
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+      }
+    },
+    DELETE: (req, res) => {
+      const urlParts = req.url.split('/');
+      const userId = parseInt(urlParts[urlParts.length - 1], 10);
+
+      if (urlParts.length === 3 && !isNaN(userId)) {
+        userController.delete(req, res, userId);
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+      }
+    },
+  },
+};
+
+const formShortUrl = (url) => {
+  const urlParts = url.split('/')
+    .filter(Boolean)
+    .map((part) => `/${part}`);
+
+  let shortUrl;
+  if (urlParts.length > 1) {
+    shortUrl = urlParts.slice(0, -1);
+  } else {
+    shortUrl = urlParts;
+  }
+  return shortUrl.join('');
+};
+
 http.createServer((req, res) => {
   sessionMiddleware(req, res, () => {
     let data = '';
@@ -34,55 +101,22 @@ http.createServer((req, res) => {
       data += chunk;
     });
 
-    if (req.url === '/') {
-      const indexPath = path.join(__dirname, 'index.html');
-      handleFileRequest(res, req, indexPath, 'text/html');
-    } else if (req.url === '/signup' && req.method === 'POST') {
-      req.on('end', () => {
-        req.body = JSON.parse(data);
-        console.log('Received sign-up request:', req.url);
-        const newUser = userController.signUp(req, res);
-        req.session.user = newUser;
-      });
-    } else if (req.url === '/signin' && req.method === 'POST') {
-      req.on('end', () => {
-        req.body = JSON.parse(data);
-        console.log('Received sign-in request:', req.url);
-        const authUser = userController.signIn(req, res);
-        req.session.user = authUser;
-      });
-    } else if (req.url === '/signout' && req.method === 'POST') {
-      req.session.destroy(() => {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end();
-      });
-    } else if (req.method === 'PATCH') {
-      const urlParts = req.url.split('/');
-      const userId = parseInt(urlParts[urlParts.length - 1], 10);
+    req.on('end', () => {
+      const shortUrl = formShortUrl(req.url);
+      console.log(shortUrl);
+      const routeHandler = routeHandlers[shortUrl][req.method];
 
-      if (urlParts.length === 3 && urlParts[1] === 'users' && !isNaN(userId)) {
-        req.on('end', () => {
-          req.body = JSON.parse(data);
-          userController.update(req, res, userId);
-        });
-      }
-    } else if (req.method === 'DELETE') {
-      const urlParts = req.url.split('/');
-      const userId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 3 && urlParts[1] === 'users' && !isNaN(userId)) {
-        userController.delete(req, res, userId);
+      if (routeHandler) {
+        req.body = JSON.parse(data);
+        routeHandler(req, res, data);
       } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
+        const filePath = path.join(__dirname, req.url);
+        const contentType = path.extname(filePath) === '.css' ?
+          'text/css' :
+          'application/javascript';
+        handleFileRequest(res, req, filePath, contentType);
       }
-    } else {
-      const filePath = path.join(__dirname, req.url);
-      const contentType = (path.extname(filePath) === '.css') ?
-        'text/css' :
-        'application/javascript';
-      handleFileRequest(res, req, filePath, contentType);
-    }
+    });
   });
 }).listen(port, () => {
   console.log(`Server is listening on port ${port}...`);
