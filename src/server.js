@@ -1,17 +1,10 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const sessions = require('client-sessions');
 const UserController = require('./controllers/user-controller');
 
 const port = 5000;
 const userController = new UserController();
-
-const sessionMiddleware = sessions({
-  cookieName: 'session',
-  secret: 'my-secret-key',
-  duration: 24 * 60 * 60 * 1000,
-});
 
 const handleFileRequest = (res, req, filePath, contentType) => {
   fs.readFile(filePath, 'utf8', (err, data) => {
@@ -35,45 +28,35 @@ const routeHandlers = {
     }
   },
   '/signup': {
-    POST: (req, res) => {
+    POST: async (req, res) => {
       console.log('Received sign-up request:', req.url);
-      const newUser = userController.signUp(req, res);
-      req.session.user = newUser;
+      await userController.signUp(req, res);
     },
   },
   '/signin': {
-    POST: (req, res) => {
+    POST: async (req, res) => {
       console.log('Received sign-in request:', req.url);
-      const authUser = userController.signIn(req, res);
-      req.session.user = authUser;
-    },
-  },
-  '/signout': {
-    POST: (req, res) => {
-      req.session.destroy(() => {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end();
-      });
+      await userController.signIn(req, res);
     },
   },
   '/users': {
-    PATCH: (req, res) => {
+    PATCH: async (req, res) => {
       const urlParts = req.url.split('/');
       const userId = parseInt(urlParts[urlParts.length - 1], 10);
 
       if (urlParts.length === 3 && !isNaN(userId)) {
-        userController.update(req, res, userId);
+        await userController.update(req, res, userId);
       } else {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.end('Bad Request');
       }
     },
-    DELETE: (req, res) => {
+    DELETE: async (req, res) => {
       const urlParts = req.url.split('/');
       const userId = parseInt(urlParts[urlParts.length - 1], 10);
 
       if (urlParts.length === 3 && !isNaN(userId)) {
-        userController.delete(req, res, userId);
+        await userController.delete(req, res, userId);
       } else {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.end('Bad Request');
@@ -98,28 +81,26 @@ const formShortUrl = (url) => {
 };
 
 http.createServer((req, res) => {
-  sessionMiddleware(req, res, () => {
-    let data = '';
-    req.on('data', (chunk) => {
-      data += chunk;
-    });
+  let data = '';
+  req.on('data', (chunk) => {
+    data += chunk;
+  });
 
-    req.on('end', () => {
-      const shortUrl = formShortUrl(req.url);
-      console.log(shortUrl);
-      const routeHandler = routeHandlers[shortUrl] && routeHandlers[shortUrl][req.method];
+  req.on('end', () => {
+    const shortUrl = formShortUrl(req.url);
+    console.log(shortUrl);
+    const routeHandler = routeHandlers[shortUrl] && routeHandlers[shortUrl][req.method];
 
-      if (routeHandler) {
-        if (data) req.body = JSON.parse(data);
-        routeHandler(req, res, data);
-      } else {
-        const filePath = path.join(__dirname, req.url);
-        const contentType = path.extname(filePath) === '.css' ?
-          'text/css' :
-          'application/javascript';
-        handleFileRequest(res, req, filePath, contentType);
-      }
-    });
+    if (routeHandler) {
+      if (data) req.body = JSON.parse(data);
+      routeHandler(req, res, data);
+    } else {
+      const filePath = path.join(__dirname, req.url);
+      const contentType = path.extname(filePath) === '.css' ?
+        'text/css' :
+        'application/javascript';
+      handleFileRequest(res, req, filePath, contentType);
+    }
   });
 }).listen(port, () => {
   console.log(`Server is listening on port ${port}...`);
