@@ -3,6 +3,9 @@
 class ChordProcessor {
   constructor(tuner) {
     this.tuner = tuner;
+    this.findNote = this.findNote.bind(this);
+    this.getUserFrequency = this.getUserFrequency.bind(this);
+    this.MIN_DECIBELS = -50;
   }
 
   async init() {
@@ -26,21 +29,33 @@ class ChordProcessor {
   }
 
   findNote(noteName, noteOctave, collectCb) {
-    try {
-      this.scriptProcessor.addEventListener('audioprocess', () => {
-        const userFrequency = this.tuner.getUserFrequency();
-
-        if (userFrequency && userFrequency > this.START_FREQUENCY) {
-          const detectedNote = this.tuner.autoModes(userFrequency, 'allNotes');
-
-          if (noteName === detectedNote.name && noteOctave === detectedNote.octave) {
-            collectCb(null, noteName);
-          }
+    const processHandler = () => {
+      const userFrequency = this.getUserFrequency();
+      console.log(userFrequency);
+      if (userFrequency) {
+        const detectedNote = this.tuner.autoModes(userFrequency, 'standardAuto');
+        console.log('Detected note: ', detectedNote);
+        if (noteName === detectedNote.name && noteOctave === detectedNote.octave) {
+          console.log('COLLECTING', noteName);
+          collectCb(null, noteName);
+          this.scriptProcessor.addEventListener('audioprocess', processHandler);
         }
-      });
-    } catch (err) {
-      collectCb(err, null);
-    }
+      }
+    };
+
+    this.scriptProcessor.addEventListener('audioprocess', processHandler);
+  }
+
+  getUserFrequency() {
+    const bufferLength = this.analyser.frequencyBinCount;
+    const dataArray = new Float32Array(bufferLength);
+    this.analyser.getFloatFrequencyData(dataArray);
+
+    const maxVolumeIndex = dataArray.indexOf(Math.max(...dataArray));
+    const binWidth = this.audioCtx.sampleRate / this.analyser.fftSize;
+    const userFrequency = maxVolumeIndex * binWidth;
+    if (dataArray[maxVolumeIndex] > this.MIN_DECIBELS) return userFrequency;
+    return undefined;
   }
 }
 
