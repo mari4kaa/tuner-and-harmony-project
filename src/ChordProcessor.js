@@ -1,10 +1,8 @@
 'use strict';
 
 class ChordProcessor {
-  constructor() {
-    this.allChords = [];
-    this.START_FREQUENCY = 65.41;
-    this.MIN_DECIBELS = -50;
+  constructor(tuner) {
+    this.tuner = tuner;
   }
 
   async init() {
@@ -27,10 +25,22 @@ class ChordProcessor {
     }
   }
 
-  processChord() {
-    this.scriptProcessor.addEventListener('audioprocess', () => {
+  findNote(noteName, noteOctave, collectCb) {
+    try {
+      this.scriptProcessor.addEventListener('audioprocess', () => {
+        const userFrequency = this.tuner.getUserFrequency();
 
-    });
+        if (userFrequency && userFrequency > this.START_FREQUENCY) {
+          const detectedNote = this.tuner.autoModes(userFrequency, 'allNotes');
+
+          if (noteName === detectedNote.name && noteOctave === detectedNote.octave) {
+            collectCb(null, noteName);
+          }
+        }
+      });
+    } catch (err) {
+      collectCb(err, null);
+    }
   }
 }
 
