@@ -7,6 +7,10 @@ const signIn = `
 SELECT * FROM users 
 WHERE login = $1`;
 
+const getById = `
+SELECT * FROM users
+WHERE id = $1`;
+
 const update = `
 UPDATE users
 SET login = $1, password = crypt($2, gen_salt('bf')), email = $3
@@ -29,6 +33,7 @@ WHERE users.id = $3`;
 const userQuery = {
   signUp,
   signIn,
+  getById,
   update,
   del,
   userExists,

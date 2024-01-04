@@ -40,6 +40,17 @@ const routeHandlers = {
     },
   },
   '/users': {
+    GET: async (req, res) => {
+      const urlParts = req.url.split('/');
+      const userId = parseInt(urlParts[urlParts.length - 1], 10);
+
+      if (urlParts.length === 3 && !isNaN(userId)) {
+        await userController.getById(req, res, userId);
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+      }
+    },
     PATCH: async (req, res) => {
       const urlParts = req.url.split('/');
       const userId = parseInt(urlParts[urlParts.length - 1], 10);

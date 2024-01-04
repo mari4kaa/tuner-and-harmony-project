@@ -31,6 +31,18 @@ class UserController {
     }
   }
 
+  async getById(req, res, userId) {
+    try {
+      const user = await this.userService.getById(userId);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(user));
+    } catch (error) {
+      console.error(error);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end(`${error}`);
+    }
+  }
+
   async update(req, res, userId) {
     try {
       const updatedUser = req.body;
