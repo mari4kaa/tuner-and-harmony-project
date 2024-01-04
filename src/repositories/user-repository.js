@@ -13,8 +13,8 @@ WHERE id = $1`;
 
 const update = `
 UPDATE users
-SET login = $1, password = crypt($2, gen_salt('bf')), email = $3
-WHERE id = $4
+SET login = $1, password = crypt($2, gen_salt('bf')), email = $3, updated_at = to_timestamp($4 / 1000.0)
+WHERE id = $5
 RETURNING *`;
 
 const del = `

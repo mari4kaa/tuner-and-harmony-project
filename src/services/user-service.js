@@ -52,8 +52,10 @@ class UserService {
     const existingUser = await userExists(userId);
     if (!existingUser.length) throw new Error('User not found');
 
+    const updatedAt = Date.now();
+
     const query = userQuery.update;
-    const { rows } = await pool.query(query, [login, password, email, userId]);
+    const { rows } = await pool.query(query, [login, password, email, updatedAt, userId]);
     return rows[0];
   }
 
