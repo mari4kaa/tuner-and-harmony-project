@@ -27,7 +27,7 @@ class Collector {
       subCollector.timeout(subTimeout)
         .done((err, chordData) => {
           if (err) {
-            console.error('Main collector was timed out');
+            this.finish(err, this.data);
           } else {
             console.log(`Chord ${chordKey} collected!`);
             console.log(chordData);
@@ -68,11 +68,6 @@ class Collector {
     if (msec > 0) {
       this.timer = setTimeout(() => {
         const err = new Error('Timed out');
-        if (!this.isSubCollector) {
-          this.subCollectors.forEach((subCollector, key) => {
-            subCollector.finish(err, key);
-          });
-        }
         this.finish(err, this.data);
       }, msec);
     }

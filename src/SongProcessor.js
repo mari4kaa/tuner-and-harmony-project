@@ -49,7 +49,7 @@ class SongProcessor {
     const chordNotes2 = this.allChords.get(chord2);
 
     const collector = this.collect(2)
-      .timeout(10000)
+      .timeout(1000000)
       .done((err, result) => {
         if (err) {
           const scriptProcessor = this.chordProc.scriptProcessor;
@@ -64,7 +64,7 @@ class SongProcessor {
       });
     console.log('chordNotes1', chordNotes1);
     console.log('chordNotes2', chordNotes2);
-    collector.takeChord(chord1, this.chordProc.findNote, null, ...chordNotes1);
+    collector.takeChord(chord1, this.chordProc.findNote, 3000, ...chordNotes1);
     collector.takeChord(chord2, this.chordProc.findNote, null, ...chordNotes2);
   }
 }
