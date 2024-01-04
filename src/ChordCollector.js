@@ -10,6 +10,7 @@ class Collector {
     this.doneCallback = () => {};
     this.finished = false;
     this.data = {};
+    this.subCollectors = new Map();
   }
 
   collect(key, err, value) {
@@ -33,6 +34,28 @@ class Collector {
     fn(...args, (err, data) => {
       this.collect(key, err, data);
     });
+    return this;
+  }
+
+  takeChord(chordKey, fn, ...args) {
+    if (!this.subCollectors.has(chordKey)) {
+      this.subCollectors.set(chordKey, new Collector(args.length)
+        .done((err, chordData) => {
+          if (err) {
+            console.error(`Error collecting chord ${chordKey}: ${err}`);
+          } else {
+            console.log(`Chord ${chordKey} collected!`);
+            console.log(chordData);
+          }
+        }));
+    }
+
+    const subCollector = this.subCollectors.get(chordKey);
+    args.forEach((note, index) => {
+      console.log(note);
+      subCollector.take(`${chordKey}-note-${index + 1}`, fn, note.name, note.octave);
+    });
+
     return this;
   }
 
