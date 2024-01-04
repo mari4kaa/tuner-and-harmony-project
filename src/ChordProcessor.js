@@ -29,20 +29,19 @@ class ChordProcessor {
   }
 
   findNote(noteName, noteOctave, collectCb) {
+    console.log('LOOKING FOR A NOTE', noteName);
     const processHandler = () => {
       const userFrequency = this.getUserFrequency();
-      console.log(userFrequency);
       if (userFrequency) {
         const detectedNote = this.tuner.autoModes(userFrequency, 'standardAuto');
         console.log('Detected note: ', detectedNote);
         if (noteName === detectedNote.name && noteOctave === detectedNote.octave) {
           console.log('COLLECTING', noteName);
           collectCb(null, noteName);
-          this.scriptProcessor.addEventListener('audioprocess', processHandler);
+          this.scriptProcessor.removeEventListener('audioprocess', processHandler);
         }
       }
     };
-
     this.scriptProcessor.addEventListener('audioprocess', processHandler);
   }
 
