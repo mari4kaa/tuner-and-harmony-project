@@ -13,12 +13,15 @@ class SongProcessor {
     this.allChords.set('C', [ {name: 'G', octave: 3}, {name: 'D', octave: 3}, {name: 'A', octave: 2} ]);
   }
 
+  async init() {
+    await this.chordProc.init();
+  }
+
   collect(expected) {
     return new Collector(expected);
   }
 
-  async processChords() {
-    await this.chordProc.init();
+  processChords(onCapturedCb) {
     //const song = ask from db;
     /*let i = 0;
     for (const line of song) {
@@ -45,8 +48,8 @@ class SongProcessor {
     const chordNotes1 = this.allChords.get(chord1);
     const chordNotes2 = this.allChords.get(chord2);
 
-    const collector = this.collect(3)
-      //.timeout(10000)
+    const collector = this.collect(2)
+      //.timeout(1000)
       .done((err, result) => {
         if (err) console.error(err);
         else {
@@ -56,8 +59,8 @@ class SongProcessor {
       });
     console.log('chordNotes1', chordNotes1);
     console.log('chordNotes2', chordNotes2);
-    collector.takeChord(chord1, this.chordProc.findNote, ...chordNotes1);
-    collector.takeChord(chord2, this.chordProc.findNote, ...chordNotes2);
+    collector.takeChord(chord1, this.chordProc.findNote, null, ...chordNotes1);
+    collector.takeChord(chord2, this.chordProc.findNote, null, ...chordNotes2);
   }
 }
 

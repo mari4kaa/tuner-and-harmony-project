@@ -1,62 +1,60 @@
 'use strict';
 
 class Collector {
-  constructor(expected) {
-    this.expectKeys = Array.isArray(expected) ? new Set(expected) : null;
-    this.expected = this.expectKeys ? expected.length : expected;
+  constructor(expectedCount) {
+    this.expectedCount = expectedCount;
     this.keys = new Set();
+    this.subCollectors = new Map();
     this.count = 0;
     this.timer = null;
-    this.doneCallback = () => {};
+    this.onDoneCallback = () => {};
     this.finished = false;
     this.data = {};
-    this.subCollectors = new Map();
   }
 
-  collect(key, err, value) {
-    if (this.finished) return this;
-    if (err) {
-      this.finalize(err, this.data);
-      return this;
-    }
-    if (!this.keys.has(key)) {
-      this.count++;
-    }
-    this.data[key] = value;
-    this.keys.add(key);
-    if (this.expected === this.count) {
-      this.finalize(null, this.data);
-    }
-    return this;
-  }
-
-  take(key, fn, ...args) {
+  takeNote(key, fn, ...args) {
     fn(...args, (err, data) => {
       this.collect(key, err, data);
     });
     return this;
   }
 
-  takeChord(chordKey, fn, ...args) {
+  takeChord(chordKey, fn, subTimeout, ...args) {
     if (!this.subCollectors.has(chordKey)) {
-      this.subCollectors.set(chordKey, new Collector(args.length)
+      const subCollector = new Collector(args.length)
+        .timeout(subTimeout)
         .done((err, chordData) => {
           if (err) {
-            console.error(`Error collecting chord ${chordKey}: ${err}`);
+            this.fail(chordKey, err);
           } else {
             console.log(`Chord ${chordKey} collected!`);
             console.log(chordData);
             this.collect(chordKey, null, chordData);
           }
-        }));
+        });
+      this.subCollectors.set(chordKey, subCollector);
     }
-
     const subCollector = this.subCollectors.get(chordKey);
     args.forEach((note, index) => {
-      console.log(note);
-      subCollector.take(`${chordKey}-note-${index + 1}`, fn, note.name, note.octave);
+      subCollector.takeNote(`${chordKey}-note-${index + 1}`, fn, note.name, note.octave);
     });
+    return this;
+  }
 
+  collect(key, err, value) {
+    if (this.finished) return this;
+    if (err) {
+      this.finish(err, this.data);
+      return this;
+    }
+    if (!this.keys.has(key)) {
+      this.count++;
+      this.keys.add(key);
+    }
+    this.data[key] = value;
+    if (this.expectedCount === this.count) {
+      this.finish(null, this.data);
+    }
     return this;
   }
 
@@ -67,27 +65,32 @@ class Collector {
     }
     if (msec > 0) {
       this.timer = setTimeout(() => {
-        const err = new Error('Collector timed out');
-        this.finalize(err, this.data);
+        const err = new Error('Timed out');
+        this.finish(err, this.data);
       }, msec);
     }
     return this;
   }
 
-  done(callback) {
-    this.doneCallback = callback;
+  fail(key, err) {
+    this.collect(key, err);
     return this;
   }
 
-  finalize(err, data) {
+  done(callback) {
+    this.onDoneCallback = callback;
+    return this;
+  }
+
+  finish(err, data) {
     if (this.finished) return this;
-    if (this.doneCallback) {
+    if (this.onDoneCallback) {
       if (this.timer) {
         clearTimeout(this.timer);
         this.timer = null;
       }
       this.finished = true;
-      this.doneCallback(err, data);
+      this.onDoneCallback(err, data);
     }
     return this;
   }
