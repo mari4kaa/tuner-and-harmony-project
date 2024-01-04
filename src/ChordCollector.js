@@ -23,8 +23,8 @@ class Collector {
   takeChord(chordKey, fn, subTimeout, ...args) {
     if (this.isSubCollector) return this;
     if (!this.subCollectors.has(chordKey)) {
-      const subCollector = new Collector(args.length);
-      subCollector.timeout(subTimeout)
+      const subCollector = new Collector(args.length)
+        .timeout(subTimeout)
         .done((err, chordData) => {
           if (err) {
             this.finish(err, this.data);
@@ -34,6 +34,7 @@ class Collector {
             this.collect(chordKey, null, chordData);
           }
         });
+      subCollector.isSubCollector = true;
       this.subCollectors.set(chordKey, subCollector);
     }
     const subCollector = this.subCollectors.get(chordKey);
@@ -71,11 +72,6 @@ class Collector {
         this.finish(err, this.data);
       }, msec);
     }
-    return this;
-  }
-
-  fail(key, err) {
-    this.collect(key, err);
     return this;
   }
 
