@@ -46,6 +46,7 @@ class Collector {
           } else {
             console.log(`Chord ${chordKey} collected!`);
             console.log(chordData);
+            this.collect(chordKey, null, chordData);
           }
         }));
     }
