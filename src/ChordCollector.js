@@ -5,6 +5,7 @@ class Collector {
     this.expectedCount = expectedCount;
     this.keys = new Set();
     this.subCollectors = new Map();
+    this.isSubCollector = false;
     this.count = 0;
     this.timer = null;
     this.onDoneCallback = () => {};
@@ -20,12 +21,13 @@ class Collector {
   }
 
   takeChord(chordKey, fn, subTimeout, ...args) {
+    if (this.isSubCollector) return this;
     if (!this.subCollectors.has(chordKey)) {
-      const subCollector = new Collector(args.length)
-        .timeout(subTimeout)
+      const subCollector = new Collector(args.length);
+      subCollector.timeout(subTimeout)
         .done((err, chordData) => {
           if (err) {
-            this.fail(chordKey, err);
+            console.error('Main collector was timed out');
           } else {
             console.log(`Chord ${chordKey} collected!`);
             console.log(chordData);
@@ -66,6 +68,11 @@ class Collector {
     if (msec > 0) {
       this.timer = setTimeout(() => {
         const err = new Error('Timed out');
+        if (!this.isSubCollector) {
+          this.subCollectors.forEach((subCollector, key) => {
+            subCollector.finish(err, key);
+          });
+        }
         this.finish(err, this.data);
       }, msec);
     }

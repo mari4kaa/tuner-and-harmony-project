@@ -5,6 +5,7 @@ class ChordProcessor {
     this.tuner = tuner;
     this.findNote = this.findNote.bind(this);
     this.getUserFrequency = this.getUserFrequency.bind(this);
+    this.processHandlers = [];
     this.MIN_DECIBELS = -50;
   }
 
@@ -30,18 +31,21 @@ class ChordProcessor {
 
   findNote(noteName, noteOctave, collectCb) {
     console.log('LOOKING FOR A NOTE', noteName);
-    const processHandler = () => {
-      const userFrequency = this.getUserFrequency();
+    const self = this;
+    function processHandler() {
+      const userFrequency = self.getUserFrequency();
       if (userFrequency) {
-        const detectedNote = this.tuner.autoModes(userFrequency, 'standardAuto');
+        const detectedNote = self.tuner.autoModes(userFrequency, 'standardAuto');
         console.log('Detected note: ', detectedNote);
         if (noteName === detectedNote.name && noteOctave === detectedNote.octave) {
           console.log('COLLECTING', noteName);
           collectCb(null, noteName);
-          this.scriptProcessor.removeEventListener('audioprocess', processHandler);
+          self.scriptProcessor.removeEventListener('audioprocess', processHandler);
         }
       }
-    };
+    }
+
+    this.processHandlers.push(processHandler);
     this.scriptProcessor.addEventListener('audioprocess', processHandler);
   }
 

@@ -49,10 +49,15 @@ class SongProcessor {
     const chordNotes2 = this.allChords.get(chord2);
 
     const collector = this.collect(2)
-      //.timeout(1000)
+      .timeout(10000)
       .done((err, result) => {
-        if (err) console.error(err);
-        else {
+        if (err) {
+          const scriptProcessor = this.chordProc.scriptProcessor;
+          for (const handle of this.chordProc.processHandlers) {
+            scriptProcessor.removeEventListener('audioprocess', handle);
+          }
+          console.error(err);
+        } else {
           console.log('SUCCESS!!!!!!!!!!!');
           console.log(result);
         }
