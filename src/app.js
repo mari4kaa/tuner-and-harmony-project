@@ -1,5 +1,6 @@
 'use strict';
 
+const SongProcessor = require('./SongProcessor.js');
 const Tuner = require('./tuner.js');
 const Meter = require('./user-interface/UI-tuner/meter.js');
 const Note = require('./user-interface/UI-tuner/note.js');
@@ -13,30 +14,33 @@ class Application {
     this.tuner = new Tuner(this.defaultConfig);
     this.meter = new Meter();
     this.note = new Note();
+    this.songProcessor = new SongProcessor(this.tuner);
   }
 
-  start() {
-    const onCaptured = (noteData) => {
-      this.update(noteData);
-    };
-
+  async start() {
     swal.fire({
       title: 'Welcome to the guitar tuner!',
       showCancelButton: false,
       confirmButtonText: 'OK',
       allowOutsideClick: false
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        this.tuner.init();
-        this.tuner.tune(onCaptured);
+        await this.tuner.init();
+        //this.tuner.tune(onCapturedTune);
+        await this.songProcessor.init();
+        //this.songProcessor.processChords(onCapturedChord)
       }
     });
   }
 
-  update(noteData) {
+  updateNotes(noteData) {
     this.note.hideNote();
     this.note.displayNote(noteData.name, noteData.octave);
     this.meter.update(noteData.delta);
+  }
+
+  updateSong() {
+
   }
 }
 
@@ -57,6 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
   addClickListener(app, 'fourthStr', { selectedString: 4, mode: 'standardStrict' });
   addClickListener(app, 'fifthStr', { selectedString: 5, mode: 'standardStrict' });
   addClickListener(app, 'sixthStr', { selectedString: 6, mode: 'standardStrict' });
+
+  document.getElementById('startTuningBtn').addEventListener('click', () => {
+    app.tuner.tune((noteData) => app.updateNotes(noteData));
+  });
+
+  document.getElementById('processChordsBtn').addEventListener('click', () => {
+    app.songProcessor.processChords(() => app.updateSong);
+  });
 });
 
-app.start();
+(app.start)();

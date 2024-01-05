@@ -1,7 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 
-async function processFile(filePath) {
+async function parseSong(filePath) {
   const fileStream = fs.createReadStream(filePath);
 
   const rl = readline.createInterface({
@@ -17,7 +17,7 @@ async function processFile(filePath) {
     parsedLines.push(textLine);
   }
 
-  return parsedLines;
+  return parsedLines.join('\n');
 }
 
 function parseChords(line) {
@@ -46,4 +46,4 @@ function parseChords(line) {
   return { chordLine, textLine };
 }
 
-module.exports = processFile;
+module.exports = parseSong;

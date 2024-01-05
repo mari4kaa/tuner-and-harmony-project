@@ -1,16 +1,15 @@
-const UserService = require('../services/user-service');
+const SongService = require('../services/song-service');
 
-class UserController {
+class SongController {
   constructor() {
-    this.userService = new UserService();
+    this.songService = new SongService();
   }
 
-  async signUp(req, res) {
+  async getPlaylist(req, res, userId) {
     try {
-      const userData = req.body;
-      const newUser = await this.userService.signUp(userData);
+      const playlist = await this.songService.getPlaylist(userId);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(newUser));
+      res.end(JSON.stringify(playlist));
     } catch (error) {
       console.error(error);
       res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -18,12 +17,11 @@ class UserController {
     }
   }
 
-  async signIn(req, res) {
+  async getSongById(req, res, songId) {
     try {
-      const credentials = req.body;
-      const authenticatedUser = await this.userService.signIn(credentials);
+      const song = await this.songService.getSongById(songId);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(authenticatedUser));
+      res.end(JSON.stringify(song));
     } catch (error) {
       console.error(error);
       res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -31,11 +29,12 @@ class UserController {
     }
   }
 
-  async getById(req, res, userId) {
+  async createSong(req, res, userId) {
     try {
-      const user = await this.userService.getById(userId);
+      const songData = req.body;
+      const newSong = await this.songService.createSong(songData, userId);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(user));
+      res.end(JSON.stringify(newSong));
     } catch (error) {
       console.error(error);
       res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -43,12 +42,12 @@ class UserController {
     }
   }
 
-  async update(req, res, userId) {
+  async updateSong(req, res, songId) {
     try {
-      const updatedUser = req.body;
-      const deletedUser = await this.userService.update(updatedUser, userId);
+      const songData = req.body;
+      const updatedSong = await this.songService.updateSong(songData, songId);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(deletedUser));
+      res.end(JSON.stringify(updatedSong));
     } catch (error) {
       console.error(error);
       res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -56,17 +55,18 @@ class UserController {
     }
   }
 
-  async delete(req, res, userId) {
+  async deleteSong(req, res, songId) {
     try {
-      const deletedUser = await this.userService.delete(userId);
+      const deletedSong = await this.songService.deleteSong(songId);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(deletedUser));
+      res.end(JSON.stringify(deletedSong));
     } catch (error) {
       console.error(error);
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end(`${error}`);
     }
   }
+
 }
 
-module.exports = UserController;
+module.exports = SongController;

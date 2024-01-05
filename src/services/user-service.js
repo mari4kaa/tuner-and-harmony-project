@@ -39,7 +39,19 @@ class UserService {
     return user;
   }
 
+  async getById(userId) {
+    const existingUser = await userExists(userId);
+    if (!existingUser.length) throw new Error('User not found');
+
+    const query =  userQuery.getById;
+    const { rows } = await pool.query(query, [userId]);
+    return rows[0];
+  }
+
   async update({ login, password, email }, userId) {
+    const existingUser = await userExists(userId);
+    if (!existingUser.length) throw new Error('User not found');
+
     const query = userQuery.update;
     const { rows } = await pool.query(query, [login, password, email, userId]);
     return rows[0];
