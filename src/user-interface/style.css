@@ -18,8 +18,15 @@ html {
   }
 
   button {
-    padding: 10px 20px;
+    padding: 15px 20px;
     font-size: 14px;
+  }
+
+  #scrollable-panel {
+    margin-left: 80%;
+    height: 100vh;
+    overflow: auto;
+    padding: 10px;
   }
 
   #meter-container {
