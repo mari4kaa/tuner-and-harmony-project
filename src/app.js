@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('processChordsBtn').addEventListener('click', () => {
     app.tuner.stop();
-    app.songProcessor.processChords(() => app.updateSong);
+    app.songProcessor.processChords(app.updateSong, 4 /*test id value. will be replaced*/);
   });
 });
 

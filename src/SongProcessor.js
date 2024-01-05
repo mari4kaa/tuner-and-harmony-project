@@ -19,47 +19,43 @@ class SongProcessor {
     return new Collector(expected);
   }
 
-  async processChords(onCapturedCb) {
+  async processChords(onCapturedCb, songId) {
     this.stopped = false;
-    const songId = 4; //testing value
 
     const song = await this.getSong(songId);
     const songArr = song.split('\n');
 
-    this.processSongIteration(0, songArr, onCapturedCb);
-  }
+    for (let i = 0; i < songArr.length; i += 2) {
+      const line = songArr[i];
+      const chords = line.split(' ').filter(String);
+      const chordsCount = chords.length;
 
-  processSongIteration(index, songArr, onCapturedCb) {
-    if (index >= songArr.length || index % 2 !== 0 || this.stopped === true) {
-      return;
-    }
-    const line = songArr[index];
-    const chords = line.split(' ').filter(String);
-    const chordsCount = chords.length;
-
-    if (chordsCount) {
-      const collector = this.collect()
-        .done((err, result) => {
-          if (err) {
-            const scriptProcessor = this.chordProc.scriptProcessor;
-            for (const handle of this.chordProc.processHandlers) {
-              scriptProcessor.removeEventListener('audioprocess', handle);
+      if (chordsCount) {
+        const collector = this.collect(chordsCount);
+        const collectorDonePromise = new Promise((resolve) =>
+          collector.done((err, result) => {
+            if (err) {
+              const scriptProcessor = this.chordProc.scriptProcessor;
+              for (const handle of this.chordProc.processHandlers) {
+                scriptProcessor.removeEventListener('audioprocess', handle);
+              }
+              console.error(err);
+            } else {
+              console.log('SUCCESS!!!');
+              console.log(result);
+              onCapturedCb();
+              resolve();
             }
-            console.error(err);
-          } else {
-            console.log('SUCCESS!!!');
-            console.log(result);
-            onCapturedCb();
-            this.processSongIteration(index + 2, songArr, onCapturedCb);
-          }
+          })
+        );
+
+        chords.map((chord) => {
+          const chordNotes = this.allChords.get(chord);
+          collector.takeChord(chord, this.chordProc.findNote, null, ...chordNotes);
         });
 
-      chords.map((chord) => {
-        const chordNotes = this.allChords.get(chord);
-        collector.takeChord(chord, this.chordProc.findNote, null, ...chordNotes);
-      });
-    } else {
-      this.processSongIteration(index + 2, songArr, onCapturedCb);
+        await collectorDonePromise;
+      }
     }
   }
 
