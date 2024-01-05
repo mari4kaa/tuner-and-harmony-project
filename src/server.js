@@ -2,9 +2,11 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const UserController = require('./controllers/user-controller');
+const SongController = require('./controllers/song-controller');
 
 const port = 5000;
 const userController = new UserController();
+const songController = new SongController();
 
 const handleFileRequest = (res, req, filePath, contentType) => {
   fs.readFile(filePath, 'utf8', (err, data) => {
@@ -74,6 +76,67 @@ const routeHandlers = {
       }
     },
   },
+  '/songs': {
+    GET: async (req, res) => {
+      const urlParts = req.url.split('/');
+      const songId = parseInt(urlParts[urlParts.length - 1], 10);
+
+      if (urlParts.length === 3 && !isNaN(songId)) {
+        await songController.getSongById(req, res, songId);
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+      }
+    },
+    PATCH: async (req, res) => {
+      const urlParts = req.url.split('/');
+      const songId = parseInt(urlParts[urlParts.length - 1], 10);
+
+      if (urlParts.length === 3 && !isNaN(songId)) {
+        await songController.updateSong(req, res, songId);
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+      }
+    },
+    DELETE: async (req, res) => {
+      const urlParts = req.url.split('/');
+      const songId = parseInt(urlParts[urlParts.length - 1], 10);
+
+      if (urlParts.length === 3 && !isNaN(songId)) {
+        await songController.deleteSong(req, res, songId);
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+      }
+    },
+  },
+  '/song/user': {
+    POST: async (req, res) => {
+      const urlParts = req.url.split('/');
+      const userId = parseInt(urlParts[urlParts.length - 1], 10);
+
+      if (urlParts.length === 4 && !isNaN(userId)) {
+        await songController.createSong(req, res, userId);
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+      }
+    },
+  },
+  '/playlist/user': {
+    GET: async (req, res) => {
+      const urlParts = req.url.split('/');
+      const userId = parseInt(urlParts[urlParts.length - 1], 10);
+
+      if (urlParts.length === 4 && !isNaN(userId)) {
+        await songController.getPlaylist(req, res, userId);
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad Request');
+      }
+    }
+  }
 };
 
 const formShortUrl = (url) => {
