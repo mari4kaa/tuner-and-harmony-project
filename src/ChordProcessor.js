@@ -35,7 +35,7 @@ class ChordProcessor {
     function processHandler() {
       const userFrequency = self.getUserFrequency();
       if (userFrequency) {
-        const detectedNote = self.tuner.autoModes(userFrequency, 'standardAuto');
+        const detectedNote = self.tuner.autoModes(userFrequency, 'allNotes');
         if (noteName === detectedNote.name && noteOctave === detectedNote.octave) {
           console.log('COLLECTING', noteName);
           collectCb(null, noteName);
