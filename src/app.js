@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   addClickListener(app, 'sixthStr', { selectedString: 6, mode: 'standardStrict' });
 
   document.getElementById('startTuningBtn').addEventListener('click', () => {
+    app.songProcessor.stop();
     app.tuner.tune((noteData) => app.updateNotes(noteData));
   });
 
