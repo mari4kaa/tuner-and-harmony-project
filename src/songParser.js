@@ -21,27 +21,23 @@ async function parseSong(filePath) {
 }
 
 function parseChords(line) {
-  const regex = /\*(.*?)\*/g;
-  let match;
-  let lastIndex = 0;
   let chordLine = '';
   let textLine = '';
 
-  while ((match = regex.exec(line)) !== null) {
-    const chord = match[1];
-    const { index } = match;
+  while (line.includes('*')) {
+    const chordStart = line.indexOf('*');
+    const chordEnd = line.indexOf('*', chordStart + 1);
 
-    textLine += line.substring(lastIndex, index).trim();
-    textLine += ' ';
+    if (chordEnd === -1) break;
 
-    chordLine += ' '.repeat(textLine.length - chordLine.length);
-    chordLine += chord;
+    const chord = line.substring(chordStart + 1, chordEnd);
+    textLine += line.substring(0, chordStart).trim() + ' ';
+    chordLine += ' '.repeat(textLine.length - chordLine.length) + chord;
 
-    lastIndex = index + match[0].length;
+    line = line.substring(chordEnd + 1);
   }
 
-  const remainingText = line.substring(lastIndex).trim();
-  textLine += remainingText;
+  textLine += line.trim();
 
   return { chordLine, textLine };
 }
