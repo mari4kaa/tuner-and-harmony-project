@@ -5,66 +5,38 @@ class SongController {
     this.songService = new SongService();
   }
 
-  async getPlaylist(req, res, userId) {
+  async wrapControl(req, res, callback, ...args) {
     try {
-      const playlist = await this.songService.getPlaylist(userId);
+      const data = await callback(...args);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(playlist));
+      res.end(JSON.stringify(data));
     } catch (error) {
       console.error(error);
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end(`${error}`);
     }
+  }
+
+  async getPlaylist(req, res, userId) {
+    await this.wrapControl(req, res, this.songService.getPlaylist, userId);
   }
 
   async getSongById(req, res, songId) {
-    try {
-      const song = await this.songService.getSongById(songId);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(song));
-    } catch (error) {
-      console.error(error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(`${error}`);
-    }
+    await this.wrapControl(req, res, this.songService.getSongById, songId);
   }
 
   async createSong(req, res, userId) {
-    try {
-      const songData = req.body;
-      const newSong = await this.songService.createSong(songData, userId);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(newSong));
-    } catch (error) {
-      console.error(error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(`${error}`);
-    }
+    const songData = req.body;
+    await this.wrapControl(req, res, this.songService.createSong, songData, userId);
   }
 
   async updateSong(req, res, songId) {
-    try {
-      const songData = req.body;
-      const updatedSong = await this.songService.updateSong(songData, songId);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(updatedSong));
-    } catch (error) {
-      console.error(error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(`${error}`);
-    }
+    const songData = req.body;
+    await this.wrapControl(req, res, this.songService.updateSong, songData, songId);
   }
 
   async deleteSong(req, res, songId) {
-    try {
-      const deletedSong = await this.songService.deleteSong(songId);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(deletedSong));
-    } catch (error) {
-      console.error(error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(`${error}`);
-    }
+    await this.wrapControl(req, res, this.songService.deleteSong, songId);
   }
 
 }
