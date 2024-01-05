@@ -26,9 +26,7 @@ class Application {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.tuner.init();
-        //this.tuner.tune(onCapturedTune);
         await this.songProcessor.init();
-        //this.songProcessor.processChords(onCapturedChord)
       }
     });
   }
@@ -40,7 +38,7 @@ class Application {
   }
 
   updateSong() {
-
+    console.log('SCROLL THE SONG');
   }
 }
 
@@ -67,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('processChordsBtn').addEventListener('click', () => {
+    app.tuner.stop();
     app.songProcessor.processChords(() => app.updateSong);
   });
 });

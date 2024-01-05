@@ -10,6 +10,7 @@ const findNeighbour = function(frequency, prev, next) {
 class Tuner {
   constructor(defaultConfig) {
     this.config = defaultConfig;
+    this.tuningHandle;
     this.START_FREQUENCY = 65.41;
     this.OCTAVES = 4;
     this.MIN_DECIBELS = -50;
@@ -46,19 +47,29 @@ class Tuner {
   }
 
   tune(onCapturedCb) {
-    this.scriptProcessor.addEventListener('audioprocess', () => {
-      const userFrequency = this.getUserFrequency();
+    const self = this;
+    function processHandler() {
+      const userFrequency = self.getUserFrequency();
       if (userFrequency) {
         let noteData;
-        if (this.config.mode !== 'standardStrict') {
-          noteData = this.autoModes(userFrequency, this.config.mode);
+        if (self.config.mode !== 'standardStrict') {
+          noteData = self.autoModes(userFrequency, self.config.mode);
         } else {
-          const stringIdx = this.StandardTune.length - this.config.selectedString;
-          noteData = this.modeStandardStrict(userFrequency, stringIdx);
+          const stringIdx = self.StandardTune.length - self.config.selectedString;
+          noteData = self.modeStandardStrict(userFrequency, stringIdx);
         }
         onCapturedCb(noteData);
       }
-    });
+    }
+    this.tuningHandle = processHandler;
+    this.scriptProcessor.addEventListener('audioprocess', processHandler);
+  }
+
+  stop() {
+    if (this.tuningHandle) {
+      this.scriptProcessor.removeEventListener('audioprocess', this.tuningHandle);
+      this.tuningHandle = null;
+    }
   }
 
   getUserFrequency() {
