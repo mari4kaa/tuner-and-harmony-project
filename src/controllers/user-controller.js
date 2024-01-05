@@ -5,67 +5,39 @@ class UserController {
     this.userService = new UserService();
   }
 
-  async signUp(req, res) {
+  async wrapControl(req, res, callback, ...args) {
     try {
-      const userData = req.body;
-      const newUser = await this.userService.signUp(userData);
+      const data = await callback(...args);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(newUser));
+      res.end(JSON.stringify(data));
     } catch (error) {
       console.error(error);
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end(`${error}`);
     }
+  }
+
+  async signUp(req, res) {
+    const userData = req.body;
+    await this.wrapControl(req, res, this.userService.signUp, userData);
   }
 
   async signIn(req, res) {
-    try {
-      const credentials = req.body;
-      const authenticatedUser = await this.userService.signIn(credentials);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(authenticatedUser));
-    } catch (error) {
-      console.error(error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(`${error}`);
-    }
+    const credentials = req.body;
+    await this.wrapControl(req, res, this.userService.signIn, credentials);
   }
 
   async getById(req, res, userId) {
-    try {
-      const user = await this.userService.getById(userId);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(user));
-    } catch (error) {
-      console.error(error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(`${error}`);
-    }
+    await this.wrapControl(req, res, this.userService.getById, userId);
   }
 
   async update(req, res, userId) {
-    try {
-      const updatedUser = req.body;
-      const deletedUser = await this.userService.update(updatedUser, userId);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(deletedUser));
-    } catch (error) {
-      console.error(error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(`${error}`);
-    }
+    const updatedUser = req.body;
+    await this.wrapControl(req, res, this.userService.update, updatedUser, userId);
   }
 
   async delete(req, res, userId) {
-    try {
-      const deletedUser = await this.userService.delete(userId);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(deletedUser));
-    } catch (error) {
-      console.error(error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end(`${error}`);
-    }
+    await this.wrapControl(req, res, this.userService.delete, userId);
   }
 }
 

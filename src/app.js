@@ -15,6 +15,7 @@ class Application {
     this.meter = new Meter();
     this.note = new Note();
     this.songProcessor = new SongProcessor(this.tuner);
+    this.moveLength = 20;
   }
 
   async start() {
@@ -26,9 +27,7 @@ class Application {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.tuner.init();
-        //this.tuner.tune(onCapturedTune);
         await this.songProcessor.init();
-        //this.songProcessor.processChords(onCapturedChord)
       }
     });
   }
@@ -40,7 +39,8 @@ class Application {
   }
 
   updateSong() {
-
+    const scrollablePanel = document.getElementById('scrollable-panel');
+    scrollablePanel.scrollTop -= this.moveLength;
   }
 }
 
@@ -63,11 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
   addClickListener(app, 'sixthStr', { selectedString: 6, mode: 'standardStrict' });
 
   document.getElementById('startTuningBtn').addEventListener('click', () => {
+    app.songProcessor.stop();
     app.tuner.tune((noteData) => app.updateNotes(noteData));
   });
 
   document.getElementById('processChordsBtn').addEventListener('click', () => {
-    app.songProcessor.processChords(() => app.updateSong);
+    app.tuner.stop();
+    app.songProcessor.processChords(app.updateSong.bind(app), 4 /*test id value. will be replaced*/);
   });
 });
 

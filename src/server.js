@@ -22,6 +22,18 @@ const handleFileRequest = (res, req, filePath, contentType) => {
   });
 };
 
+const idValidationWrap = async (req, res, urlLength, callback) => {
+  const urlParts = req.url.split('/');
+  const id = parseInt(urlParts[urlParts.length - 1], 10);
+
+  if (urlParts.length === urlLength && !isNaN(id)) {
+    await callback(req, res, id);
+  } else {
+    res.writeHead(400, { 'Content-Type': 'text/plain' });
+    res.end('Bad Request');
+  }
+};
+
 const routeHandlers = {
   '/': {
     GET: (req, res) => {
@@ -31,110 +43,44 @@ const routeHandlers = {
   },
   '/signup': {
     POST: async (req, res) => {
-      console.log('Received sign-up request:', req.url);
       await userController.signUp(req, res);
     },
   },
   '/signin': {
-    POST: async (req, res) => {
-      console.log('Received sign-in request:', req.url);
+    GET: async (req, res) => {
       await userController.signIn(req, res);
     },
   },
   '/users': {
     GET: async (req, res) => {
-      const urlParts = req.url.split('/');
-      const userId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 3 && !isNaN(userId)) {
-        await userController.getById(req, res, userId);
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
+      await idValidationWrap(req, res, 3, userController.getById.bind(userController));
     },
     PATCH: async (req, res) => {
-      const urlParts = req.url.split('/');
-      const userId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 3 && !isNaN(userId)) {
-        await userController.update(req, res, userId);
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
+      await idValidationWrap(req, res, 3, userController.update.bind(userController));
     },
     DELETE: async (req, res) => {
-      const urlParts = req.url.split('/');
-      const userId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 3 && !isNaN(userId)) {
-        await userController.delete(req, res, userId);
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
+      await idValidationWrap(req, res, 3, userController.delete.bind(userController));
     },
   },
   '/songs': {
     GET: async (req, res) => {
-      const urlParts = req.url.split('/');
-      const songId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 3 && !isNaN(songId)) {
-        await songController.getSongById(req, res, songId);
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
+      await idValidationWrap(req, res, 3, songController.getSongById.bind(songController));
     },
     PATCH: async (req, res) => {
-      const urlParts = req.url.split('/');
-      const songId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 3 && !isNaN(songId)) {
-        await songController.updateSong(req, res, songId);
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
+      await idValidationWrap(req, res, 3, songController.updateSong.bind(songController));
     },
     DELETE: async (req, res) => {
-      const urlParts = req.url.split('/');
-      const songId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 3 && !isNaN(songId)) {
-        await songController.deleteSong(req, res, songId);
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
+      await idValidationWrap(req, res, 3, songController.deleteSong.bind(songController));
     },
   },
   '/song/user': {
     POST: async (req, res) => {
-      const urlParts = req.url.split('/');
-      const userId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 4 && !isNaN(userId)) {
-        await songController.createSong(req, res, userId);
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
+      await idValidationWrap(req, res, 4, songController.createSong.bind(songController));
     },
   },
   '/playlist/user': {
     GET: async (req, res) => {
-      const urlParts = req.url.split('/');
-      const userId = parseInt(urlParts[urlParts.length - 1], 10);
-
-      if (urlParts.length === 4 && !isNaN(userId)) {
-        await songController.getPlaylist(req, res, userId);
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
+      await idValidationWrap(req, res, 4, songController.getPlaylist.bind(songController));
     }
   }
 };
@@ -162,7 +108,6 @@ http.createServer((req, res) => {
 
   req.on('end', () => {
     const shortUrl = formShortUrl(req.url);
-    console.log(shortUrl);
     const routeHandler = routeHandlers[shortUrl] && routeHandlers[shortUrl][req.method];
 
     if (routeHandler) {
