@@ -41,7 +41,6 @@ class SongProcessor {
               }
               console.error(err);
             } else {
-              console.log('SUCCESS!!!');
               console.log(result);
               onCapturedCb();
               resolve();
@@ -83,10 +82,18 @@ class SongProcessor {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const { content } = await response.json();
+      this.showSong(content);
       return content;
     } catch (error) {
       console.error('Error getting a song');
     }
+  }
+
+  showSong(content) {
+    const scrollablePanel = document.getElementById('scrollable-panel');
+    const contentDiv = document.createElement('div');
+    contentDiv.textContent = content;
+    scrollablePanel.appendChild(contentDiv);
   }
 
   getChordsMap() {

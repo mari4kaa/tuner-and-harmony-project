@@ -15,6 +15,7 @@ class Application {
     this.meter = new Meter();
     this.note = new Note();
     this.songProcessor = new SongProcessor(this.tuner);
+    this.moveLength = 20;
   }
 
   async start() {
@@ -38,7 +39,8 @@ class Application {
   }
 
   updateSong() {
-    console.log('SCROLL THE SONG');
+    const scrollablePanel = document.getElementById('scrollable-panel');
+    scrollablePanel.scrollTop -= this.moveLength;
   }
 }
 
@@ -67,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('processChordsBtn').addEventListener('click', () => {
     app.tuner.stop();
-    app.songProcessor.processChords(app.updateSong, 4 /*test id value. will be replaced*/);
+    app.songProcessor.processChords(app.updateSong.bind(app), 4 /*test id value. will be replaced*/);
   });
 });
 
